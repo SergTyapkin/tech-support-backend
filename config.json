@@ -19,6 +19,5 @@
     "SMTP_mail_server_port": 587,
     "SMTP_mail_server_use_tls": true,
     "mail_address": "techsupport.sergtyapkin@gmail.com",
-    "mail_sender_name": "TechSupport",
-    "mail_password": "ahaotwlnkwctgaut"
+    "mail_sender_name": "TechSupport"
 }
