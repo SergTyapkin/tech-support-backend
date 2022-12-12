@@ -44,10 +44,8 @@ selectSessionByUserId = \
     "WHERE userId = %s"
 
 selectUserDataBySessionToken = \
-    f"SELECT {_userColumns}, quests.title as chosenQuest, branches.title as chosenBranch FROM sessions " \
+    f"SELECT {_userColumns} FROM sessions " \
     "JOIN users ON sessions.userId = users.id " \
-    "LEFT JOIN quests ON users.chosenquestid = quests.id " \
-    "LEFT JOIN branches ON users.chosenbranchid = branches.id " \
     "WHERE token = %s"
 
 selectSecretCodeByUserIdType = \
@@ -57,7 +55,7 @@ selectSecretCodeByUserIdType = \
     "expires > NOW()"
 
 selectUserByEmailCodeType = \
-    "SELECT users.id, name, joineddate, avatarImageId, chosenbranchid, chosenquestid FROM users " \
+    "SELECT users.id, name, joineddate, avatarImageId FROM users " \
     "JOIN secretCodes ON secretCodes.userId = users.id " \
     "WHERE email = %s AND " \
     "code = %s AND " \
@@ -198,13 +196,17 @@ selectPLaceById = \
     "WHERE id = %s"
 
 selectRatings = \
-    "SELECT count(perticipations.id) as rating, users.id, users.name " \
+    "SELECT count(participations.id) as rating, users.id, users.name " \
     "FROM users " \
     "LEFT JOIN participations ON participations.userId = users.id " \
     "WHERE isConfirmedEmail = True AND isConfirmedByAdmin = True " \
     "GROUP BY users.id " \
     "ORDER BY rating DESC"
 
+selectPeopleNeedsByEventId = \
+    "SELECT people_needs.*, name FROM people_needs " \
+    "JOIN positions ON people_needs.positionid = positions.id " \
+    "WHERE eventId = %s"
 
 # ----- UPDATES -----
 updateEventById = \
@@ -261,9 +263,9 @@ deleteParticipationByEventidUserid = \
     "DELETE FROM participations " \
     "WHERE eventId = %s AND userId = %s"
 
-deletePeopleNeedsById = \
+deletePeopleNeedsByEventId = \
     "DELETE FROM people_needs " \
-    "WHERE id = %s"
+    "WHERE eventId = %s"
 
 # --- IMAGES ---
 insertImage = \

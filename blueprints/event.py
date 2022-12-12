@@ -32,7 +32,16 @@ def eventGet(userId):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    return jsonResponse(DB.execute(sql.selectEventById, [id]))
+    eventData = DB.execute(sql.selectEventById, [id])
+    peopleNeeds = DB.execute(sql.selectPeopleNeedsByEventId, [id], manyResults=True)
+    for needing in peopleNeeds:
+        needing = {
+            'positionId': needing['positionId'],
+            'name': needing['name'],
+            'count': needing['count']
+        }
+    eventData['needPeople'] = peopleNeeds
+    return jsonResponse(eventData)
 
 
 @app.route("", methods=["POST"])
@@ -52,8 +61,11 @@ def eventCreate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    resp = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, userData.id])
-    return jsonResponse(resp)
+    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, userData.id])
+
+    for needing in needPeople:
+        resp = DB.execute(sql.insertPeopleNeeds, [event['id'], needing.positionId, needing.count])
+    return jsonResponse(event)
 
 
 @app.route("", methods=["PUT"])
@@ -74,10 +86,14 @@ def eventUpdate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    resp = DB.execute(sql.updateEventById, [name, id])
-    if resp is None:
-        return jsonResponse("Должность не найдена", HTTP_NOT_FOUND)
-    return jsonResponse(resp)
+    event = DB.execute(sql.updateEventById, [name, id])
+    if event is None:
+        return jsonResponse("Событие не найдено", HTTP_NOT_FOUND)
+
+    DB.execute(sql.deletePeopleNeedsByEventId, [event['id']])
+    for needing in needPeople:
+        resp = DB.execute(sql.insertPeopleNeeds, [event['id'], needing.positionId, needing.count])
+    return jsonResponse(event)
 
 
 @app.route("", methods=["DELETE"])
