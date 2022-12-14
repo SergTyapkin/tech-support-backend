@@ -1,7 +1,7 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, name, email, isAdmin, joinedDate, isConfirmedEmail, isConfirmedByAdmin, avatarImageId"
+_userColumns = "users.id, name, email, title, isAdmin, joinedDate, isConfirmedEmail, isConfirmedByAdmin, avatarImageId"
 # ----- INSERTS -----
 insertUser = \
     "INSERT INTO users (password, avatarImageId, email, name) " \
@@ -67,6 +67,7 @@ updateUserById = \
     "UPDATE users SET " \
     "name = %s, " \
     "email = %s, " \
+    "title = %s, " \
     "avatarImageId = %s " \
     "WHERE id = %s " \
     "RETURNING *"
@@ -152,7 +153,7 @@ insertPlace = \
 def selectEvents(filters):
     type = 'next'
     if 'type' in filters:
-        type = filters.type
+        type = filters['type']
 
     typeStr = "NULL = NULL "
     if type == 'next':
@@ -160,25 +161,27 @@ def selectEvents(filters):
     elif type == 'past':
         typeStr = "date <= NOW()"
 
+    participationSelect = ""
     participationJoin = ""
     participationWhere = ""
     if 'participantId' in filters:
-        participationJoin = "JOIN participations p ON p.eventId = event.id "
-        participationWhere = "WHERE p.userId = %s "
+        participationSelect = ", positions.name positionname "
+        participationJoin = "JOIN participations p ON p.eventId = events.id JOIN positions ON p.positionId = positions.id "
+        participationWhere = f"p.userId = {filters['participantId']} AND "
 
     return \
-        "SELECT * FROM events " \
-        "JOIN places ON events.placeId = place.id " \
+        f"SELECT events.*, users.name authorname, places.name placename {participationSelect} FROM events " \
+        "JOIN places ON events.placeId = places.id " \
         "JOIN users ON events.authorId = users.id " + \
         participationJoin + \
         "WHERE " + \
-        ("date = %s AND " if 'date' in filters else "") + \
-        ("placeId = %s AND " if 'placeId' in filters else "") + \
+        (f"date = {filters['date']} AND " if 'date' in filters else "") + \
+        (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         participationWhere + typeStr
 
 
 selectEventById = \
-    "SELECT * FROM events " \
+    "SELECT events.*, users.name authorname, places.name placename FROM events " \
     "JOIN users ON events.authorId = users.id " \
     "JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
@@ -195,6 +198,11 @@ selectPLaceById = \
     "SELECT * FROM places " \
     "WHERE id = %s"
 
+selectParticipationByUseridEventid = \
+    "SELECT * FROM participations " \
+    "WHERE userid = %s AND " \
+    "eventid = %s"
+
 selectRatings = \
     "SELECT count(participations.id) as rating, users.id, users.name " \
     "FROM users " \
@@ -204,7 +212,7 @@ selectRatings = \
     "ORDER BY rating DESC"
 
 selectPeopleNeedsByEventId = \
-    "SELECT people_needs.*, name FROM people_needs " \
+    "SELECT people_needs.*, positions.name positionname FROM people_needs " \
     "JOIN positions ON people_needs.positionid = positions.id " \
     "WHERE eventId = %s"
 

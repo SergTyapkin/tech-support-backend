@@ -19,7 +19,7 @@ def participateInEvent(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userId != userData.id) and (not userData.isAdmin):
+    if (userId != userData['id']) and (not userData['isadmin']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     return jsonResponse(DB.execute(sql.insertParticipation, [eventId, userId, positionId]))
@@ -29,13 +29,14 @@ def participateInEvent(userData):
 @login_required
 def notParticipateInEvent(userData):
     try:
-        req = request.args
+        req = request.json
         eventId = req['eventId']
         userId = req['userId']
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userId != userData.id) and (not userData.isAdmin):
+    if (userId != userData['id']) and (not userData['isadmin']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
-    return jsonResponse(DB.execute(sql.deleteParticipationByEventidUserid, [eventId, userId]))
+    DB.execute(sql.deleteParticipationByEventidUserid, [eventId, userId])
+    return jsonResponse("Вы больше не участвуете в событии")

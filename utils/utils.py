@@ -1,5 +1,7 @@
+import datetime
 import json
 import os
+from datetime import time
 
 from flask import jsonify, make_response, current_app
 from flask_mail import Mail, Message
@@ -99,3 +101,14 @@ def send_email(email, title, htmlBody):
                       sender=(current_app.config['MAIL_DEFAULT_SENDER'], current_app.config['MAIL_DEFAULT_SENDER']))
         msg.html = htmlBody
         mail.send(msg)
+
+
+def times_to_str(object):
+    for key in object.keys():
+        if type(object[key]) is datetime.time:
+            object[key] = str(object[key])
+
+
+def list_times_to_str(listWithTimedelta):
+    for el in listWithTimedelta:
+        times_to_str(el)

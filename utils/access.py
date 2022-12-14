@@ -50,7 +50,7 @@ def login_and_email_confirmation_required(f):
         userData = get_logined_user()
         if not userData:
             return jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
-        if not userData['isconfirmed']:
+        if not userData['isconfirmedemail']:
             return jsonResponse("EMail не подтвержден", HTTP_NO_PERMISSIONS)
         return f(*args, userData, **kwargs)
 

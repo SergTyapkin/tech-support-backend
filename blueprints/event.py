@@ -8,11 +8,13 @@ from utils.utils import *
 app = Blueprint('events', __name__)
 
 
-@app.route("/all")
+@app.route("")
 @login_required_return_id
 def eventsGet(userId):
     try:
         req = request.args
+        id = req.get('id')
+
         date = req.get('date')
         placeId = req.get('placeId')
         participantId = req.get('participantId')
@@ -20,28 +22,25 @@ def eventsGet(userId):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    return jsonResponse(DB.execute(sql.selectEvents(req), [], manyResults=True))
+    if id is not None:  # get single event
+        eventData = DB.execute(sql.selectEventById, [id])
+        times_to_str(eventData)
+        peopleNeeds = DB.execute(sql.selectPeopleNeedsByEventId, [id], manyResults=True)
+        for needing in peopleNeeds:
+            needing = {
+                'positionId': needing['positionid'],
+                'positionName': needing['positionname'],
+                'count': needing['count']
+            }
+        eventData['needpeople'] = peopleNeeds
+        participation = DB.execute(sql.selectParticipationByUseridEventid, [userId, eventData['id']])
+        eventData['isyouparticipate'] = bool(participation)
+        return jsonResponse(eventData)
 
-
-@app.route("")
-@login_required_return_id
-def eventGet(userId):
-    try:
-        req = request.args
-        id = req['id']
-    except:
-        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
-
-    eventData = DB.execute(sql.selectEventById, [id])
-    peopleNeeds = DB.execute(sql.selectPeopleNeedsByEventId, [id], manyResults=True)
-    for needing in peopleNeeds:
-        needing = {
-            'positionId': needing['positionId'],
-            'name': needing['name'],
-            'count': needing['count']
-        }
-    eventData['needPeople'] = peopleNeeds
-    return jsonResponse(eventData)
+    # get events list by filters
+    events = DB.execute(sql.selectEvents(req), [], manyResults=True)
+    list_times_to_str(events)
+    return jsonResponse(events)
 
 
 @app.route("", methods=["POST"])
@@ -61,7 +60,7 @@ def eventCreate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, userData.id])
+    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, userData['id']])
 
     for needing in needPeople:
         resp = DB.execute(sql.insertPeopleNeeds, [event['id'], needing.positionId, needing.count])

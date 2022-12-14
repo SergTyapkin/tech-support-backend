@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     password           TEXT NOT NULL,
     email              TEXT DEFAULT NULL UNIQUE,
     name               TEXT DEFAULT NULL,
+    title              TEXT DEFAULT NULL,
     isAdmin            BOOLEAN DEFAULT FALSE,
     joinedDate         TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     isConfirmedEmail   BOOLEAN DEFAULT FALSE,
@@ -17,7 +18,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     expires  TIMESTAMP WITH TIME ZONE
 );
 
------- Positions data -------
+------ Business data -------
 CREATE TABLE IF NOT EXISTS positions (
     id             SERIAL PRIMARY KEY,
     name           TEXT NOT NULL
@@ -45,14 +46,18 @@ CREATE TABLE IF NOT EXISTS people_needs (
     id             SERIAL PRIMARY KEY,
     eventId        SERIAL NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
-    count          INT NOT NULL
+    count          INT NOT NULL,
+    UNIQUE (eventId, positionId)
 );
 
 CREATE TABLE IF NOT EXISTS participations (
     id             SERIAL PRIMARY KEY,
     eventId        SERIAL NOT NULL REFERENCES events(id) ON DELETE SET NULL,
     userId         SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL
+    positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
+    adminComment   TEXT DEFAULT NULL,
+    score          INT DEFAULT 1,
+    UNIQUE (userId, eventId)
 );
 
 

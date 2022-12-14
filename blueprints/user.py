@@ -59,7 +59,7 @@ def userAuth():
         password = req['password']
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
-    email = email.strip()
+    email = email.strip().lower()
     password = hash_sha256(password)
 
     resp = DB.execute(sql.selectUserByEmailPassword, [email, password])
@@ -94,15 +94,45 @@ def userGet(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
+    def addRatingsData(userData):
+        res = DB.execute(sql.selectRatings, [], manyResults=True)
+        positionDecrease = 0
+        for idx, rating in enumerate(res):
+            if rating['rating'] is None:
+                positionDecrease += 1
+
+            if int(rating['id']) == int(userData['id']):
+                userData['rating'] = rating['rating'] or 0
+                userData['position'] = idx + 1 - positionDecrease
+                return
+        userData['rating'] = 0
+        userData['position'] = len(res)
+
+    def addCompletedEvents(userData):
+        completedEvents = DB.execute(sql.selectEvents({"participantId": userData['id'], "type": "past"}), manyResults=True)
+        list_times_to_str(completedEvents)
+        for i in range(len(completedEvents)):
+            e = completedEvents[i]
+            completedEvents[i] = {
+                "id": e["id"],
+                "name": e["name"],
+                "position": e["positionname"],
+            }
+        userData['completedevents'] = completedEvents
+
     if userId is None:  # return self user data
         if userData is None:
             return jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
+        addCompletedEvents(userData)
+        addRatingsData(userData)
         return jsonResponse(userData)
 
     # get another user data
     res = DB.execute(sql.selectAnotherUserById, [userId])
     if not res:
         return jsonResponse("Пользователь не найден", HTTP_NOT_FOUND)
+    addCompletedEvents(userData)
+    addRatingsData(res)
     return jsonResponse(res)
 
 
@@ -136,21 +166,24 @@ def userUpdate(userData):
         userId = req['userId']
         name = req.get('name')
         email = req.get('email')
+        title = req.get('title')
         avatarImageId = req.get('avatarImageId')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
-    if (userData.id != userId) and (not userData.isAdmin):
+    if (userData['id'] != userId) and (not userData['isadmin']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     if email: email = email.strip().lower()
-    if name: email = name.strip()
+    if name: name = name.strip()
 
     if name is None: name = userData['name']
     if email is None: email = userData['email']
+    if (title is None) or (not userData['isadmin']):
+        title = userData['title']
     if avatarImageId is None: avatarImageId = userData['avatarimageid']
 
     try:
-        resp = DB.execute(sql.updateUserById, [name, email, avatarImageId, userData['id']])
+        resp = DB.execute(sql.updateUserById, [name, email,title, avatarImageId, userData['id']])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
@@ -166,7 +199,7 @@ def userDelete(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userData.id != userId) and (not userData.isAdmin):
+    if (userData['id'] != userId) and (not userData['isadmin']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     DB.execute(sql.deleteUserById, [userId])
@@ -248,7 +281,7 @@ def userAuthByEmailCode():
         userData = DB.execute(sql.selectUserByEmail, [email])
         if not userData:
             return jsonResponse("На этот email не зарегистрирован ни один аккаунт", HTTP_NOT_FOUND)
-        if not userData['isconfirmed']:
+        if not userData['isconfirmedemail']:
             return jsonResponse("Этот email не подтвержден в соответствующем аккаунте", HTTP_NO_PERMISSIONS)
 
         secretCode = new_secret_code(userData['id'], "login")
