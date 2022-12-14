@@ -18,6 +18,6 @@
     "SMTP_mail_server_host": "smtp.googlemail.com",
     "SMTP_mail_server_port": 587,
     "SMTP_mail_server_use_tls": true,
-    "mail_address": "techsupport.sergtyapkin@gmail.com",
+    "mail_address": "techsup.sergtyapkin@gmail.com",
     "mail_sender_name": "TechSupport"
 }
