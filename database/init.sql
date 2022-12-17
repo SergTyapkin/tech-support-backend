@@ -18,6 +18,14 @@ CREATE TABLE IF NOT EXISTS sessions (
     expires  TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE IF NOT EXISTS secretCodes (
+    id             SERIAL PRIMARY KEY,
+    userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
+    code           TEXT NOT NULL UNIQUE,
+    type           TEXT NOT NULL,
+    expires        TIMESTAMP WITH TIME ZONE NOT NULL,
+    UNIQUE (userId, type)
+);
 ------ Business data -------
 CREATE TABLE IF NOT EXISTS positions (
     id             SERIAL PRIMARY KEY,
@@ -68,16 +76,30 @@ CREATE TABLE IF NOT EXISTS images (
     bytes          BYTEA
 );
 
-
-CREATE TABLE IF NOT EXISTS secretCodes (
+CREATE TABLE IF NOT EXISTS achievements (
     id             SERIAL PRIMARY KEY,
-    userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
-    code           TEXT NOT NULL UNIQUE,
-    type           TEXT NOT NULL,
-    expires        TIMESTAMP WITH TIME ZONE NOT NULL,
-    UNIQUE (userId, type)
+    name           TEXT NOT NULL,
+    description    TEXT DEFAULT NULL,
+    levels         INT NOT NULL,
+    imageId        SERIAL REFERENCES images(id) ON DELETE SET NULL DEFAULT NULL
 );
 
+CREATE TABLE IF NOT EXISTS users_achievements (
+    id             SERIAL PRIMARY KEY,
+    userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
+    achievementId  SERIAL REFERENCES achievements(id) ON DELETE SET NULL,
+    level          INT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS docs (
+    id             SERIAL PRIMARY KEY,
+    title          TEXT NOT NULL,
+    text           TEXT NOT NULL,
+    placeId        SERIAL REFERENCES places(id) ON DELETE SET NULL,
+    positionId     SERIAL REFERENCES positions(id) ON DELETE SET NULL,
+    authorId       SERIAL REFERENCES users(id) ON DELETE SET NULL,
+    lastRedactorId SERIAL REFERENCES users(id) ON DELETE SET NULL
+);
 ----------
 DO $$
 BEGIN
