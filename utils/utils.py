@@ -106,7 +106,9 @@ def send_email(email, title, htmlBody):
 def times_to_str(object):
     for key in object.keys():
         if type(object[key]) is datetime.time:
-            object[key] = str(object[key])
+            object[key] = object[key].isoformat()
+        if type(object[key]) is datetime.date:
+            object[key] = object[key].isoformat()
 
 
 def list_times_to_str(listWithTimedelta):

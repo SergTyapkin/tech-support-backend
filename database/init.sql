@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     name           TEXT NOT NULL,
     description    TEXT DEFAULT NULL,
     levels         INT NOT NULL,
-    imageId        SERIAL REFERENCES images(id) ON DELETE SET NULL DEFAULT NULL
+    imageId        SERIAL REFERENCES images(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS users_achievements (
