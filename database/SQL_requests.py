@@ -148,6 +148,10 @@ insertPlace = \
     "VALUES (%s) " \
     "RETURNING *"
 
+insertDoc = \
+    "INSERT INTO docs (title, text, placeId, positionid, authorId, lastRedactorId) " \
+    "VALUES (%s, %s, %s, %s, %s, %s) " \
+    "RETURNING *"
 
 # ----- SELECTS -----
 def selectEvents(filters):
@@ -155,7 +159,7 @@ def selectEvents(filters):
     if 'type' in filters:
         type = filters['type']
 
-    typeStr = "NULL = NULL "
+    typeStr = "1 = 1"
     if type == 'next':
         typeStr = "date > NOW()"
     elif type == 'past':
@@ -177,6 +181,7 @@ def selectEvents(filters):
         "WHERE " + \
         (f"date = {filters['date']} AND " if 'date' in filters else "") + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
+        (f"name LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
         participationWhere + typeStr
 
 
@@ -185,6 +190,28 @@ selectEventById = \
     "JOIN users ON events.authorId = users.id " \
     "JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
+
+
+def selectDocs(filters):
+    return \
+        f"SELECT docs.*, users.name authorname, ured.name lastredactorname, places.name placename, positions.name positionname FROM docs " \
+        "JOIN places ON docs.placeId = places.id " \
+        "JOIN positions ON docs.positionId = positions.id " \
+        "JOIN users ON docs.authorId = users.id " + \
+        "JOIN users ured ON docs.lastRedactorId = ured.id " + \
+        "WHERE " + \
+        (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
+        (f"positionId = {filters['positionId']} AND " if 'positionId' in filters else "") + \
+        (f"title LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
+        "1 = 1"
+
+
+selectDocById = \
+    "SELECT docs.*, users.name authorname, places.name placename, positions.name positionname FROM docs " \
+    "JOIN users ON docs.authorId = users.id " \
+    "JOIN places ON docs.placeId = places.id " \
+    "JOIN positions ON docs.positionId = positions.id " \
+    "WHERE docs.id = %s"
 
 selectAllPositions = \
     "SELECT * FROM positions"
@@ -254,6 +281,19 @@ updatePeopleneedsCountByEventidPositionid = \
     "WHERE eventId = %s AND positionId = %s " \
     "RETURNING *"
 
+updateDocById = \
+    "UPDATE docs SET " \
+    "name = %s, " \
+    "description = %s, " \
+    "placeId = %s, " \
+    "date = %s, " \
+    "timeStart = %s, " \
+    "timeEnd = %s, " \
+    "eventTimeStart = %s, " \
+    "eventTimeEnd = %s " \
+    "WHERE id = %s " \
+    "RETURNING *"
+
 # ----- DELETES -----
 deleteEventById = \
     "DELETE FROM events " \
@@ -274,6 +314,10 @@ deleteParticipationByEventidUserid = \
 deletePeopleNeedsByEventId = \
     "DELETE FROM people_needs " \
     "WHERE eventId = %s"
+
+deleteDocById = \
+    "DELETE FROM docs " \
+    "WHERE id = %s "
 
 # --- IMAGES ---
 insertImage = \

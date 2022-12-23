@@ -9,6 +9,7 @@ from blueprints.ratings import app as ratings_app
 from blueprints.participation import app as participation_app
 from blueprints.place import app as place_app
 from blueprints.position import app as position_app
+from blueprints.docs import app as docs_app
 from blueprints.image import app as image_app
 from middleware import Middleware
 from utils.utils import read_config
@@ -25,6 +26,7 @@ app.register_blueprint(ratings_app, url_prefix='/ratings')
 app.register_blueprint(participation_app,   url_prefix='/participation')
 app.register_blueprint(place_app,   url_prefix='/place')
 app.register_blueprint(position_app,   url_prefix='/position')
+app.register_blueprint(docs_app,   url_prefix='/docs')
 app.register_blueprint(image_app,   url_prefix='/image')
 
 app.config['MAIL_SERVER'] = _config['SMTP_mail_server_host']

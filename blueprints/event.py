@@ -40,7 +40,7 @@ def eventsGet(userId):
     # get events list by filters
     events = DB.execute(sql.selectEvents(req), [], manyResults=True)
     list_times_to_str(events)
-    return jsonResponse(events)
+    return jsonResponse({"events": events})
 
 
 @app.route("", methods=["POST"])
@@ -85,9 +85,21 @@ def eventUpdate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    event = DB.execute(sql.updateEventById, [name, id])
-    if event is None:
+    eventData = DB.execute(sql.selectEventById, [id])
+    if eventData is None:
         return jsonResponse("Событие не найдено", HTTP_NOT_FOUND)
+    times_to_str(eventData)
+
+    if name is None: name = eventData['name']
+    if description is None: description = eventData['description']
+    if placeId is None: placeId = eventData['placeId']
+    if date is None: date = eventData['date']
+    if timeStart: timeStart = eventData['timestart']
+    if timeEnd is None: timeEnd = eventData['timeend']
+    if eventTimeStart: eventTimeStart = eventData['eventTimeStart']
+    if eventTimeEnd is None: eventTimeEnd = eventData['eventTimeEnd']
+
+    event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, id])
 
     DB.execute(sql.deletePeopleNeedsByEventId, [event['id']])
     for needing in needPeople:
