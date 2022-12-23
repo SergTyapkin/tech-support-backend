@@ -11,7 +11,8 @@ app = Blueprint('places', __name__)
 @app.route("/all")
 @login_required_return_id
 def placesGet(userId):
-    return jsonResponse(DB.execute(sql.selectAllPlaces, []))
+    places = DB.execute(sql.selectAllPlaces, [], manyResults=True)
+    return jsonResponse({"places": places})
 
 
 @app.route("")
