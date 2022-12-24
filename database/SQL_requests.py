@@ -186,7 +186,7 @@ def selectEvents(filters):
 
 
 selectEventById = \
-    "SELECT events.*, users.name authorname, places.name placename FROM events " \
+    "SELECT events.*, users.name authorname, users.email authoremail, places.name placename FROM events " \
     "JOIN users ON events.authorId = users.id " \
     "JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
@@ -229,6 +229,10 @@ selectParticipationByUseridEventid = \
     "SELECT * FROM participations " \
     "WHERE userid = %s AND " \
     "eventid = %s"
+
+selectParticipationsByEventid = \
+    "SELECT * FROM participations " \
+    "WHERE eventid = %s"
 
 selectRatings = \
     "SELECT count(participations.id) as rating, users.id, users.name " \
