@@ -2,7 +2,8 @@
 CREATE TABLE IF NOT EXISTS users (
     id                 SERIAL PRIMARY KEY,
     password           TEXT NOT NULL,
-    email              TEXT DEFAULT NULL UNIQUE,
+    telegram           TEXT DEFAULT NULL,
+    email              TEXT NOT NULL UNIQUE,
     name               TEXT DEFAULT NULL,
     title              TEXT DEFAULT NULL,
     isAdmin            BOOLEAN DEFAULT FALSE,
@@ -47,15 +48,8 @@ CREATE TABLE IF NOT EXISTS events (
     timeEnd        TIME NOT NULL,
     eventTimeStart TIME DEFAULT NULL,
     eventTimeEnd   TIME DEFAULT NULL,
+    peopleNeeds    INT DEFAULT NULL,
     authorId       SERIAL NOT NULL REFERENCES users(id) ON DELETE SET NULL
-);
-
-CREATE TABLE IF NOT EXISTS people_needs (
-    id             SERIAL PRIMARY KEY,
-    eventId        SERIAL NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
-    count          INT NOT NULL,
-    UNIQUE (eventId, positionId)
 );
 
 CREATE TABLE IF NOT EXISTS participations (

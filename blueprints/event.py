@@ -25,16 +25,8 @@ def eventsGet(userId):
     if id is not None:  # get single event
         eventData = DB.execute(sql.selectEventById, [id])
         times_to_str(eventData)
-        peopleNeeds = DB.execute(sql.selectPeopleNeedsByEventId, [id], manyResults=True)
-        for needing in peopleNeeds:
-            needing = {
-                'positionId': needing['positionid'],
-                'positionName': needing['positionname'],
-                'count': needing['count']
-            }
-        eventData['needpeople'] = peopleNeeds
-        participation = DB.execute(sql.selectParticipationByUseridEventid, [userId, eventData['id']])
-        eventData['isyouparticipate'] = bool(participation)
+        participations = DB.execute(sql.selectParticipationsByEventid, [eventData['id']])
+        eventData['participations'] = participations
         return jsonResponse(eventData)
 
     # get events list by filters

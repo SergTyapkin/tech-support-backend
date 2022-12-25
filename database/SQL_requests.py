@@ -1,7 +1,7 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, name, email, title, isAdmin, joinedDate, isConfirmedEmail, isConfirmedByAdmin, avatarImageId"
+_userColumns = "users.id, name, telegram, title, isAdmin, joinedDate, isConfirmedEmail, isConfirmedByAdmin, avatarImageId"
 # ----- INSERTS -----
 insertUser = \
     "INSERT INTO users (password, avatarImageId, email, name) " \
@@ -67,6 +67,7 @@ updateUserById = \
     "UPDATE users SET " \
     "name = %s, " \
     "email = %s, " \
+    "telegram = %s, " \
     "title = %s, " \
     "avatarImageId = %s " \
     "WHERE id = %s " \
@@ -128,11 +129,6 @@ insertEvent = \
     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) " \
     "RETURNING *"
 
-insertPeopleNeeds = \
-    "INSERT INTO people_needs (eventId, positionId, count) " \
-    "VALUES (%s, %s, %s) " \
-    "RETURNING *"
-
 insertParticipation = \
     "INSERT INTO participations (eventId, userId, positionId) " \
     "VALUES (%s, %s, %s) " \
@@ -174,7 +170,7 @@ def selectEvents(filters):
         participationWhere = f"p.userId = {filters['participantId']} AND "
 
     return \
-        f"SELECT events.*, users.name authorname, places.name placename {participationSelect} FROM events " \
+        f"SELECT events.*, users.name authorname, places.name placename {participationSelect}, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
         "JOIN places ON events.placeId = places.id " \
         "JOIN users ON events.authorId = users.id " + \
         participationJoin + \
@@ -186,7 +182,7 @@ def selectEvents(filters):
 
 
 selectEventById = \
-    "SELECT events.*, users.name authorname, users.email authoremail, places.name placename FROM events " \
+    "SELECT events.*, users.name authorname, users.telegram authortelegram, places.name placename, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
     "JOIN users ON events.authorId = users.id " \
     "JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
@@ -194,7 +190,7 @@ selectEventById = \
 
 def selectDocs(filters):
     return \
-        f"SELECT docs.*, users.name authorname, ured.name lastredactorname, places.name placename, positions.name positionname FROM docs " \
+        f"SELECT docs.*, users.name authorname, users.telegram authortelegram, ured.name lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
         "JOIN places ON docs.placeId = places.id " \
         "JOIN positions ON docs.positionId = positions.id " \
         "JOIN users ON docs.authorId = users.id " + \
@@ -242,11 +238,6 @@ selectRatings = \
     "GROUP BY users.id " \
     "ORDER BY rating DESC"
 
-selectPeopleNeedsByEventId = \
-    "SELECT people_needs.*, positions.name positionname FROM people_needs " \
-    "JOIN positions ON people_needs.positionid = positions.id " \
-    "WHERE eventId = %s"
-
 # ----- UPDATES -----
 updateEventById = \
     "UPDATE events SET " \
@@ -257,7 +248,8 @@ updateEventById = \
     "timeStart = %s, " \
     "timeEnd = %s, " \
     "eventTimeStart = %s, " \
-    "eventTimeEnd = %s " \
+    "eventTimeEnd = %s, " \
+    "peopleNeeds = %s " \
     "WHERE id = %s " \
     "RETURNING *"
 
@@ -277,12 +269,6 @@ updatePlaceById = \
     "UPDATE places SET " \
     "name = %s " \
     "WHERE id = %s " \
-    "RETURNING *"
-
-updatePeopleneedsCountByEventidPositionid = \
-    "UPDATE people_needs SET " \
-    "count = %s " \
-    "WHERE eventId = %s AND positionId = %s " \
     "RETURNING *"
 
 updateDocById = \
@@ -314,10 +300,6 @@ deletePlaceById = \
 deleteParticipationByEventidUserid = \
     "DELETE FROM participations " \
     "WHERE eventId = %s AND userId = %s"
-
-deletePeopleNeedsByEventId = \
-    "DELETE FROM people_needs " \
-    "WHERE eventId = %s"
 
 deleteDocById = \
     "DELETE FROM docs " \

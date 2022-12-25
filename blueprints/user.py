@@ -166,6 +166,7 @@ def userUpdate(userData):
         userId = req['userId']
         name = req.get('name')
         email = req.get('email')
+        telegram = req.get('telegram')
         title = req.get('title')
         avatarImageId = req.get('avatarImageId')
     except:
@@ -174,16 +175,18 @@ def userUpdate(userData):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     if email: email = email.strip().lower()
+    if telegram: telegram = telegram.strip().lower()
     if name: name = name.strip()
 
     if name is None: name = userData['name']
     if email is None: email = userData['email']
+    if telegram is None: telegram = userData['telegram']
     if (title is None) or (not userData['isadmin']):
         title = userData['title']
     if avatarImageId is None: avatarImageId = userData['avatarimageid']
 
     try:
-        resp = DB.execute(sql.updateUserById, [name, email,title, avatarImageId, userData['id']])
+        resp = DB.execute(sql.updateUserById, [name, email, telegram, title, avatarImageId, userData['id']])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
