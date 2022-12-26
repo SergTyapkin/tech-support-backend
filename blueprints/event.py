@@ -48,14 +48,12 @@ def eventCreate(userData):
         timeEnd = req['timeEnd']
         eventTimeStart = req.get('eventTimeStart')
         eventTimeEnd = req.get('eventTimeEnd')
-        needPeople = req['needPeople']
+        peopleNeeds = req.get('peopleNeeds')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, userData['id']])
+    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, userData['id']])
 
-    for needing in needPeople:
-        resp = DB.execute(sql.insertPeopleNeeds, [event['id'], needing.positionId, needing.count])
     return jsonResponse(event)
 
 
@@ -73,7 +71,7 @@ def eventUpdate(userData):
         timeEnd = req.get('timeEnd')
         eventTimeStart = req.get('eventTimeStart')
         eventTimeEnd = req.get('eventTimeEnd')
-        needPeople = req.get('needPeople')
+        peopleNeeds = req.get('peopleNeeds')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -84,18 +82,16 @@ def eventUpdate(userData):
 
     if name is None: name = eventData['name']
     if description is None: description = eventData['description']
-    if placeId is None: placeId = eventData['placeId']
+    if placeId is None: placeId = eventData['placeid']
     if date is None: date = eventData['date']
     if timeStart: timeStart = eventData['timestart']
     if timeEnd is None: timeEnd = eventData['timeend']
-    if eventTimeStart: eventTimeStart = eventData['eventTimeStart']
-    if eventTimeEnd is None: eventTimeEnd = eventData['eventTimeEnd']
+    if eventTimeStart: eventTimeStart = eventData['eventtimestart']
+    if eventTimeEnd is None: eventTimeEnd = eventData['eventtimeend']
+    if peopleNeeds is None: peopleNeeds = eventData['peopleneeds']
 
-    event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, id])
-
-    DB.execute(sql.deletePeopleNeedsByEventId, [event['id']])
-    for needing in needPeople:
-        resp = DB.execute(sql.insertPeopleNeeds, [event['id'], needing.positionId, needing.count])
+    event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, id])
+    times_to_str(event)
     return jsonResponse(event)
 
 

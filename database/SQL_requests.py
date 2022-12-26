@@ -141,8 +141,8 @@ deleteSecretCodeByUseridCode = \
 
 # ----- INSERTS -----
 insertEvent = \
-    "INSERT INTO events (name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, authorId) " \
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) " \
+    "INSERT INTO events (name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, authorId) " \
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) " \
     "RETURNING *"
 
 insertParticipation = \
