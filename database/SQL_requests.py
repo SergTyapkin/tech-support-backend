@@ -1,7 +1,7 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, name, telegram, title, isAdmin, joinedDate, isConfirmedEmail, isConfirmedByAdmin, avatarImageId"
+_userColumns = "users.id, users.name, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId"
 # ----- INSERTS -----
 insertUser = \
     "INSERT INTO users (password, avatarImageId, email, name) " \
@@ -61,6 +61,22 @@ selectUserByEmailCodeType = \
     "code = %s AND " \
     "type = %s AND " \
     "expires > NOW()"
+
+def selectUsersByFilters(filters):
+    voteWhere = ''
+    if 'voteState' in filters:
+        voteWhere = f"score == NULL AND "
+        if (filters['voteState'] == True):
+            voteWhere = f"score != NULL AND "
+
+    return \
+        f"SELECT {_userColumns} FROM users " \
+        "WHERE " + \
+        (f"isConfirmedByAdmin = {filters['confirmedByAdminState']} AND " if 'confirmedByAdminState' in filters else "") + \
+        (f"isConfirmedEmail = {filters['confirmedEmailState']} AND " if 'confirmedEmailState' in filters else "") + \
+        (f"name LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
+        voteWhere + \
+        "1 = 1"
 
 # ----- UPDATES -----
 updateUserById = \
@@ -229,6 +245,10 @@ selectParticipationByUseridEventid = \
 selectParticipationsByEventid = \
     "SELECT * FROM participations " \
     "WHERE eventid = %s"
+
+selectParticipationsUnvoted = \
+    "SELECT * FROM participations " \
+    "WHERE score = NULL"
 
 selectRatings = \
     "SELECT count(participations.id) as rating, users.id, users.name " \

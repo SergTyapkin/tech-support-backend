@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS participations (
     userId         SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
     adminComment   TEXT DEFAULT NULL,
-    score          INT DEFAULT 1,
+    score          INT DEFAULT NULL,
     UNIQUE (userId, eventId)
 );
 
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     imageId        SERIAL REFERENCES images(id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS users_achievements (
+CREATE TABLE IF NOT EXISTS usersAchievements (
     id             SERIAL PRIMARY KEY,
     userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
     achievementId  SERIAL REFERENCES achievements(id) ON DELETE SET NULL,

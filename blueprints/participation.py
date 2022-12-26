@@ -7,23 +7,30 @@ from utils.utils import *
 
 app = Blueprint('participations', __name__)
 
-#
-# @app.route("/event", methods=["POST"])
-# @login_required
-# def participateInEvent(userData):
-#     try:
-#         req = request.json
-#         eventId = req['eventId']
-#         userId = req['userId']
-#         positionId = req['positionId']
-#     except:
-#         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
-#
-#     if (userId != userData['id']) and (not userData['isadmin']):
-#         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
-#
-#     return jsonResponse(DB.execute(sql.insertParticipation, [eventId, userId, positionId]))
-#
+
+@app.route("/unvoted", methods=["GET"])
+@login_required_admin
+def getUnvotedParticipations(userData):
+    resp = DB.execute(sql.selectParticipationsUnvoted, manyResults=True)
+    return jsonResponse(resp)
+
+
+@app.route("/event", methods=["GET"])
+@login_required
+def getParticipationsByEvent(userData):
+    try:
+        req = request.json
+        eventId = req['eventId']
+    except:
+        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
+
+    resp = DB.execute(sql.selectParticipationsByEventid, [eventId], manyResults=True)
+    if resp is None:
+        return jsonResponse("Событие не найдено", HTTP_NOT_FOUND)
+
+    return jsonResponse(resp)
+
+
 
 @app.route("/event", methods=["POST"])
 @login_required

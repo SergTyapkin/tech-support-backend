@@ -25,7 +25,7 @@ def eventsGet(userId):
     if id is not None:  # get single event
         eventData = DB.execute(sql.selectEventById, [id])
         times_to_str(eventData)
-        participations = DB.execute(sql.selectParticipationsByEventid, [eventData['id']])
+        participations = DB.execute(sql.selectParticipationsByEventid, [eventData['id']], manyResults=True)
         eventData['participations'] = participations
         return jsonResponse(eventData)
 

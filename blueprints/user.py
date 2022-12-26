@@ -337,3 +337,16 @@ def userConfirmEmail():
     return jsonResponse("Адрес email подтвержден")
 
 
+@app.route("/all")
+def usersGetAll():
+    try:
+        req = request.args
+        search = req.get('search')
+        voteState = req.get('voteState')
+        confirmedByAdminState = req.get('confirmedByAdminState')
+        confirmedEmailState = req.get('confirmedEmailState')
+    except:
+        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
+
+    resp = DB.execute(sql.selectUsersByFilters(req), manyResults=True)
+    return jsonResponse(resp)
