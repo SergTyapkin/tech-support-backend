@@ -23,6 +23,7 @@ def executeSQL(userData):
     except Exception as err:
         return jsonResponse(str(err), HTTP_INTERNAL_ERROR)
 
+
 @app.route("/user/confirmation", methods=["PUT"])
 @login_required_admin
 def setToUserAdminConfirmation(userData):

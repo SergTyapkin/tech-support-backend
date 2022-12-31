@@ -128,12 +128,12 @@ def userGet(userData):
         return jsonResponse(userData)
 
     # get another user data
-    res = DB.execute(sql.selectAnotherUserById, [userId])
-    if not res:
+    userData = DB.execute(sql.selectAnotherUserById, [userId])
+    if not userData:
         return jsonResponse("Пользователь не найден", HTTP_NOT_FOUND)
     addCompletedEvents(userData)
-    addRatingsData(res)
-    return jsonResponse(res)
+    addRatingsData(userData)
+    return jsonResponse(userData)
 
 
 @app.route("", methods=["POST"])
@@ -171,8 +171,13 @@ def userUpdate(userData):
         avatarImageId = req.get('avatarImageId')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
-    if (userData['id'] != userId) and (not userData['isadmin']):
-        return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
+
+    if userData['id'] != userId:
+        if not userData['isadmin']:
+            return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
+        userData = DB.execute(sql.selectUserById, [userId])
+    elif (not userData['isadmin']) and  (title is not None):
+        return jsonResponse("Изменять титул могут только админы", HTTP_NO_PERMISSIONS)
 
     if email: email = email.strip().lower()
     if telegram: telegram = telegram.strip().lower()
@@ -181,12 +186,11 @@ def userUpdate(userData):
     if name is None: name = userData['name']
     if email is None: email = userData['email']
     if telegram is None: telegram = userData['telegram']
-    if (title is None) or (not userData['isadmin']):
-        title = userData['title']
+    if title is None: title = userData['title']
     if avatarImageId is None: avatarImageId = userData['avatarimageid']
 
     try:
-        resp = DB.execute(sql.updateUserById, [name, email, telegram, title, avatarImageId, userData['id']])
+        resp = DB.execute(sql.updateUserById, [name, email, telegram, title, avatarImageId, userId])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
@@ -342,11 +346,10 @@ def usersGetAll():
     try:
         req = request.args
         search = req.get('search')
-        voteState = req.get('voteState')
-        confirmedByAdminState = req.get('confirmedByAdminState')
-        confirmedEmailState = req.get('confirmedEmailState')
+        confirmedByAdminState = req.get('confirmedByAdmin')
+        confirmedEmailState = req.get('confirmedEmail')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
     resp = DB.execute(sql.selectUsersByFilters(req), manyResults=True)
-    return jsonResponse(resp)
+    return jsonResponse({'users': resp})

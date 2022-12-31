@@ -12,7 +12,8 @@ app = Blueprint('participations', __name__)
 @login_required_admin
 def getUnvotedParticipations(userData):
     resp = DB.execute(sql.selectParticipationsUnvoted, manyResults=True)
-    return jsonResponse(resp)
+    list_times_to_str(resp)
+    return jsonResponse({'participations': resp})
 
 
 @app.route("/event", methods=["GET"])
@@ -53,7 +54,7 @@ def participateInEvent(userData):
     if (not eventData['isnext']) and (not userData['isadmin']):
         jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
-    response = jsonResponse(DB.execute(sql.insertParticipation, [eventId, userId, positionId]))
+    response = DB.execute(sql.insertParticipation, [eventId, userId, positionId])
     return jsonResponse(response)
 
 
@@ -79,3 +80,27 @@ def notParticipateInEvent(userData):
 
     DB.execute(sql.deleteParticipationByEventidUserid, [eventId, userId])
     return jsonResponse("Запись на событие удалена")
+
+
+@app.route("/event", methods=["PUT"])
+@login_required_admin
+def updateParticipationData(userData):
+    try:
+        req = request.json
+        id = req['id']
+        positionId = req.get('positionId')
+        score = req.get('score')
+        comment = req.get('comment')
+    except:
+        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
+
+    participationData = DB.execute(sql.selectParticipationById, [id])
+    if participationData is None:
+        jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
+
+    if positionId is None: positionId = participationData['positionid']
+    if score is None: score = participationData['score']
+    if comment is None: comment = participationData['admincomment']
+
+    response = DB.execute(sql.updateParticipationById, [positionId, score, comment, id])
+    return jsonResponse(response)

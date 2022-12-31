@@ -27,11 +27,17 @@ def eventsGet(userId):
         times_to_str(eventData)
         participations = DB.execute(sql.selectParticipationsByEventid, [eventData['id']], manyResults=True)
         eventData['participations'] = participations
+        res = DB.execute(sql.selectParticipationByUseridEventid, [userId, id])
+        eventData['isyouparticipate'] = bool(res)
         return jsonResponse(eventData)
 
     # get events list by filters
     events = DB.execute(sql.selectEvents(req), [], manyResults=True)
     list_times_to_str(events)
+    for event in events:
+        countRes = DB.execute(sql.selectParticipationsCountByEventid, [event['id']])
+        event['participationscount'] = countRes.get('count') or 0
+        event['peopleneeds'] = event['peopleneeds'] or 0
     return jsonResponse({"events": events})
 
 
@@ -53,7 +59,7 @@ def eventCreate(userData):
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
     event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, userData['id']])
-
+    times_to_str(event)
     return jsonResponse(event)
 
 

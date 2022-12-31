@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS participations (
     userId         SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
     adminComment   TEXT DEFAULT NULL,
-    score          INT DEFAULT NULL,
+    score          FLOAT DEFAULT NULL,
     UNIQUE (userId, eventId)
 );
 

@@ -1,7 +1,7 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, users.name, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId"
+_userColumns = "users.id, users.name, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId, users.email"
 # ----- INSERTS -----
 insertUser = \
     "INSERT INTO users (password, avatarImageId, email, name) " \
@@ -28,7 +28,7 @@ selectUserById = \
     "WHERE id = %s"
 
 selectAnotherUserById = \
-    f"SELECT id, name, isAdmin, joinedDate, avatarImageId FROM users " \
+    f"SELECT id, name, isAdmin, joinedDate, avatarImageId, telegram, title FROM users " \
     "WHERE id = %s"
 
 selectUserByEmail = \
@@ -63,19 +63,12 @@ selectUserByEmailCodeType = \
     "expires > NOW()"
 
 def selectUsersByFilters(filters):
-    voteWhere = ''
-    if 'voteState' in filters:
-        voteWhere = f"score == NULL AND "
-        if (filters['voteState'] == True):
-            voteWhere = f"score != NULL AND "
-
     return \
         f"SELECT {_userColumns} FROM users " \
         "WHERE " + \
-        (f"isConfirmedByAdmin = {filters['confirmedByAdminState']} AND " if 'confirmedByAdminState' in filters else "") + \
-        (f"isConfirmedEmail = {filters['confirmedEmailState']} AND " if 'confirmedEmailState' in filters else "") + \
-        (f"name LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
-        voteWhere + \
+        (f"isconfirmedByAdmin = {filters['confirmedByAdmin']} AND " if 'confirmedByAdmin' in filters else "") + \
+        (f"isconfirmedEmail = {filters['confirmedEmail']} AND " if 'confirmedEmail' in filters else "") + \
+        (f"LOWER(name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         "1 = 1"
 
 # ----- UPDATES -----
@@ -173,9 +166,9 @@ def selectEvents(filters):
 
     typeStr = "1 = 1"
     if type == 'next':
-        typeStr = "date > NOW()"
+        typeStr = "(date + timeend) > NOW()"
     elif type == 'past':
-        typeStr = "date <= NOW()"
+        typeStr = "(date + timeend) <= NOW()"
 
     participationSelect = ""
     participationJoin = ""
@@ -193,7 +186,7 @@ def selectEvents(filters):
         "WHERE " + \
         (f"date = {filters['date']} AND " if 'date' in filters else "") + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
-        (f"name LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
+        (f"LOWER(name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         participationWhere + typeStr
 
 
@@ -214,7 +207,7 @@ def selectDocs(filters):
         "WHERE " + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"positionId = {filters['positionId']} AND " if 'positionId' in filters else "") + \
-        (f"title LIKE '%{filters['search']}%' AND " if 'search' in filters else "") + \
+        (f"LOWER(title) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         "1 = 1"
 
 
@@ -237,21 +230,35 @@ selectPLaceById = \
     "SELECT * FROM places " \
     "WHERE id = %s"
 
+selectParticipationById = \
+    "SELECT * FROM participations " \
+    "WHERE id = %s"
+
 selectParticipationByUseridEventid = \
     "SELECT * FROM participations " \
     "WHERE userid = %s AND " \
     "eventid = %s"
 
 selectParticipationsByEventid = \
-    "SELECT * FROM participations " \
+    "SELECT participations.*, users.name username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname FROM participations " \
+    "JOIN users ON participations.userid = users.id " \
+    "JOIN positions on participations.positionid = positions.id " \
+    "WHERE eventid = %s"
+
+selectParticipationsCountByEventid = \
+    "SELECT COUNT(*) count FROM participations " \
     "WHERE eventid = %s"
 
 selectParticipationsUnvoted = \
-    "SELECT * FROM participations " \
-    "WHERE score = NULL"
+    "SELECT participations.*, users.name username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname, events.name eventname, events.date eventdate FROM participations " \
+    "JOIN users ON participations.userid = users.id " \
+    "JOIN positions on participations.positionid = positions.id " \
+    "JOIN events on participations.eventid = events.id " \
+    "WHERE score is NULL AND " \
+    "(events.date + events.timestart) < NOW()"
 
 selectRatings = \
-    "SELECT count(participations.id) as rating, users.id, users.name " \
+    "SELECT sum(participations.score) as rating, users.id, users.name, users.title, users.avatarimageid " \
     "FROM users " \
     "LEFT JOIN participations ON participations.userId = users.id " \
     "WHERE isConfirmedEmail = True AND isConfirmedByAdmin = True " \
@@ -279,6 +286,14 @@ updateUserConfirmationByAdminById = \
     "WHERE id = %s " \
     "RETURNING *"
 
+updateParticipationById = \
+    "UPDATE participations SET " \
+    "positionId = %s, " \
+    "score = %s, " \
+    "adminComment = %s " \
+    "WHERE id = %s " \
+    "RETURNING *"
+
 updatePositionById = \
     "UPDATE positions SET " \
     "name = %s " \
@@ -293,14 +308,11 @@ updatePlaceById = \
 
 updateDocById = \
     "UPDATE docs SET " \
-    "name = %s, " \
-    "description = %s, " \
+    "title = %s, " \
+    "text = %s, " \
     "placeId = %s, " \
-    "date = %s, " \
-    "timeStart = %s, " \
-    "timeEnd = %s, " \
-    "eventTimeStart = %s, " \
-    "eventTimeEnd = %s " \
+    "positionId = %s," \
+    "lastredactorid = %s " \
     "WHERE id = %s " \
     "RETURNING *"
 
