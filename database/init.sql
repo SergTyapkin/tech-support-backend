@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE TABLE IF NOT EXISTS secretCodes (
     id             SERIAL PRIMARY KEY,
-    userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
+    userId         INT REFERENCES users(id) ON DELETE CASCADE,
     code           TEXT NOT NULL UNIQUE,
     type           TEXT NOT NULL,
     expires        TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -42,21 +42,21 @@ CREATE TABLE IF NOT EXISTS events (
     id             SERIAL PRIMARY KEY,
     name           TEXT NOT NULL,
     description    TEXT DEFAULT NULL,
-    placeId        SERIAL NOT NULL REFERENCES places(id) ON DELETE SET NULL,
+    placeId        INT REFERENCES places(id) ON DELETE SET NULL,
     date           DATE NOT NULL,
     timeStart      TIME NOT NULL,
     timeEnd        TIME NOT NULL,
     eventTimeStart TIME DEFAULT NULL,
     eventTimeEnd   TIME DEFAULT NULL,
     peopleNeeds    INT DEFAULT NULL,
-    authorId       SERIAL NOT NULL REFERENCES users(id) ON DELETE SET NULL
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS participations (
     id             SERIAL PRIMARY KEY,
-    eventId        SERIAL NOT NULL REFERENCES events(id) ON DELETE SET NULL,
+    eventId        INT REFERENCES events(id) ON DELETE SET NULL,
     userId         SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    positionId     SERIAL NOT NULL REFERENCES positions(id) ON DELETE SET NULL,
+    positionId     INT REFERENCES positions(id) ON DELETE SET NULL,
     adminComment   TEXT DEFAULT NULL,
     score          FLOAT DEFAULT NULL,
     UNIQUE (userId, eventId)
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS participations (
 
 CREATE TABLE IF NOT EXISTS images (
     id             SERIAL PRIMARY KEY,
-    author         SERIAL REFERENCES users(id) ON DELETE SET NULL,
+    author         INT REFERENCES users(id) ON DELETE SET NULL,
     type           TEXT NOT NULL,
     bytes          BYTEA
 );
@@ -75,13 +75,13 @@ CREATE TABLE IF NOT EXISTS achievements (
     name           TEXT NOT NULL,
     description    TEXT DEFAULT NULL,
     levels         INT NOT NULL,
-    imageId        SERIAL REFERENCES images(id) ON DELETE SET NULL
+    imageId        INT REFERENCES images(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS usersAchievements (
     id             SERIAL PRIMARY KEY,
-    userId         SERIAL REFERENCES users(id) ON DELETE CASCADE,
-    achievementId  SERIAL REFERENCES achievements(id) ON DELETE SET NULL,
+    userId         INT REFERENCES users(id) ON DELETE CASCADE,
+    achievementId  INT REFERENCES achievements(id) ON DELETE SET NULL,
     level          INT NOT NULL DEFAULT 1
 );
 
@@ -89,10 +89,10 @@ CREATE TABLE IF NOT EXISTS docs (
     id             SERIAL PRIMARY KEY,
     title          TEXT NOT NULL,
     text           TEXT NOT NULL,
-    placeId        SERIAL REFERENCES places(id) ON DELETE SET NULL,
-    positionId     SERIAL REFERENCES positions(id) ON DELETE SET NULL,
-    authorId       SERIAL REFERENCES users(id) ON DELETE SET NULL,
-    lastRedactorId SERIAL REFERENCES users(id) ON DELETE SET NULL
+    placeId        INT REFERENCES places(id) ON DELETE SET NULL,
+    positionId     INT REFERENCES positions(id) ON DELETE SET NULL,
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL,
+    lastRedactorId INT REFERENCES users(id) ON DELETE SET NULL
 );
 ----------
 DO $$
@@ -104,7 +104,7 @@ BEGIN
           AND column_name = 'avatarimageid'
     ) THEN
         ALTER TABLE users ADD COLUMN
-            avatarImageId SERIAL REFERENCES images(id) ON DELETE SET NULL;
+            avatarImageId INT REFERENCES images(id) ON DELETE SET NULL;
         ALTER TABLE users ALTER COLUMN avatarImageId
             DROP NOT NULL;
         ALTER TABLE users ALTER COLUMN avatarImageId
