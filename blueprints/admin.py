@@ -19,6 +19,7 @@ def executeSQL(userData):
 
     try:
         resp = DB.execute(sqlText, manyResults=True)
+        list_times_to_str(resp)
         return jsonResponse({"response": resp})
     except Exception as err:
         return jsonResponse(str(err), HTTP_INTERNAL_ERROR)
