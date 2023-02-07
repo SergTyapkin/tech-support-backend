@@ -175,13 +175,13 @@ def selectEvents(filters):
     participationWhere = ""
     if 'participantId' in filters:
         participationSelect = ", positions.name positionname "
-        participationJoin = "JOIN participations p ON p.eventId = events.id JOIN positions ON p.positionId = positions.id "
+        participationJoin = "JOIN participations p ON p.eventId = events.id LEFT JOIN positions ON p.positionId = positions.id "
         participationWhere = f"p.userId = {filters['participantId']} AND "
 
     return \
         f"SELECT events.*, users.name authorname, places.name placename {participationSelect}, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
-        "JOIN places ON events.placeId = places.id " \
-        "JOIN users ON events.authorId = users.id " + \
+        "LEFT JOIN places ON events.placeId = places.id " \
+        "LEFT JOIN users ON events.authorId = users.id " + \
         participationJoin + \
         "WHERE " + \
         (f"date = {filters['date']} AND " if 'date' in filters else "") + \
@@ -192,18 +192,18 @@ def selectEvents(filters):
 
 selectEventById = \
     "SELECT events.*, users.name authorname, users.telegram authortelegram, places.name placename, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
-    "JOIN users ON events.authorId = users.id " \
-    "JOIN places ON events.placeId = places.id " \
+    "LEFT JOIN users ON events.authorId = users.id " \
+    "LEFT JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
 
 
 def selectDocs(filters):
     return \
         f"SELECT docs.*, users.name authorname, users.telegram authortelegram, ured.name lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
-        "JOIN places ON docs.placeId = places.id " \
-        "JOIN positions ON docs.positionId = positions.id " \
-        "JOIN users ON docs.authorId = users.id " + \
-        "JOIN users ured ON docs.lastRedactorId = ured.id " + \
+        "LEFT JOIN places ON docs.placeId = places.id " \
+        "LEFT JOIN positions ON docs.positionId = positions.id " \
+        "LEFT JOIN users ON docs.authorId = users.id " + \
+        "LEFT JOIN users ured ON docs.lastRedactorId = ured.id " + \
         "WHERE " + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"positionId = {filters['positionId']} AND " if 'positionId' in filters else "") + \
@@ -213,9 +213,9 @@ def selectDocs(filters):
 
 selectDocById = \
     "SELECT docs.*, users.name authorname, places.name placename, positions.name positionname FROM docs " \
-    "JOIN users ON docs.authorId = users.id " \
-    "JOIN places ON docs.placeId = places.id " \
-    "JOIN positions ON docs.positionId = positions.id " \
+    "LEFT JOIN users ON docs.authorId = users.id " \
+    "LEFT JOIN places ON docs.placeId = places.id " \
+    "LEFT JOIN positions ON docs.positionId = positions.id " \
     "WHERE docs.id = %s"
 
 selectAllPositions = \
