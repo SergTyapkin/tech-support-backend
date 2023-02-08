@@ -160,7 +160,7 @@ insertDoc = \
 
 # ----- SELECTS -----
 def selectEvents(filters):
-    type = 'next'
+    type = ''
     if 'type' in filters:
         type = filters['type']
 
@@ -186,7 +186,7 @@ def selectEvents(filters):
         "WHERE " + \
         (f"date = {filters['date']} AND " if 'date' in filters else "") + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
-        (f"LOWER(name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
+        (f"LOWER(events.name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         participationWhere + typeStr
 
 
