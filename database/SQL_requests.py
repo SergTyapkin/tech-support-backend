@@ -164,11 +164,11 @@ def selectEvents(filters):
     if 'type' in filters:
         type = filters['type']
 
-    typeStr = "1 = 1"
+    typeStr = "1 = 1 "
     if type == 'next':
-        typeStr = "(date + timeend) > NOW()"
+        typeStr = "(date + timeend) > NOW() "
     elif type == 'past':
-        typeStr = "(date + timeend) <= NOW()"
+        typeStr = "(date + timeend) <= NOW() "
 
     participationSelect = ""
     participationJoin = ""
@@ -187,7 +187,8 @@ def selectEvents(filters):
         (f"date = {filters['date']} AND " if 'date' in filters else "") + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"LOWER(events.name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
-        participationWhere + typeStr
+        participationWhere + typeStr + \
+        "ORDER BY events.date"
 
 
 selectEventById = \
