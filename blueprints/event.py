@@ -90,9 +90,9 @@ def eventUpdate(userData):
     if description is None: description = eventData['description']
     if placeId is None: placeId = eventData['placeid']
     if date is None: date = eventData['date']
-    if timeStart: timeStart = eventData['timestart']
+    if timeStart is None: timeStart = eventData['timestart']
     if timeEnd is None: timeEnd = eventData['timeend']
-    if eventTimeStart: eventTimeStart = eventData['eventtimestart']
+    if eventTimeStart is None: eventTimeStart = eventData['eventtimestart']
     if eventTimeEnd is None: eventTimeEnd = eventData['eventtimeend']
     if peopleNeeds is None: peopleNeeds = eventData['peopleneeds']
 
