@@ -108,22 +108,25 @@ def userGet(userData):
         userData['rating'] = 0
         userData['position'] = len(res)
 
-    def addCompletedEvents(userData):
-        completedEvents = DB.execute(sql.selectEvents({"participantId": userData['id'], "type": "past"}), manyResults=True)
-        list_times_to_str(completedEvents)
-        for i in range(len(completedEvents)):
-            e = completedEvents[i]
-            completedEvents[i] = {
-                "id": e["id"],
-                "name": e["name"],
-                "position": e["positionname"],
-            }
-        userData['completedevents'] = completedEvents
+    def addEvents(userData):
+        allEvents = DB.execute(sql.selectEvents({"participantId": userData['id']}), manyResults=True)
+        list_times_to_str(allEvents)
+        resEvents = []
+        for event in allEvents:
+            if event["score"] is None:
+                continue
+            resEvents.append({
+                "id": event["id"],
+                "name": event["name"],
+                "position": event["positionname"],
+                "score": event["score"],
+            })
+        userData['completedevents'] = resEvents
 
     if userId is None:  # return self user data
         if userData is None:
             return jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
-        addCompletedEvents(userData)
+        addEvents(userData)
         addRatingsData(userData)
         return jsonResponse(userData)
 

@@ -99,7 +99,7 @@ def updateParticipationData(userData):
         jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
 
     if positionId is None: positionId = participationData['positionid']
-    if score is None: score = participationData['score']
+    if score is None and "score" not in req: score = participationData['score']
     if comment is None: comment = participationData['admincomment']
 
     response = DB.execute(sql.updateParticipationById, [positionId, score, comment, id])

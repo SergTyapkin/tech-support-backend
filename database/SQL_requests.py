@@ -174,7 +174,7 @@ def selectEvents(filters):
     participationJoin = ""
     participationWhere = ""
     if 'participantId' in filters:
-        participationSelect = ", positions.name positionname "
+        participationSelect = ", positions.name positionname, score "
         participationJoin = "JOIN participations p ON p.eventId = events.id LEFT JOIN positions ON p.positionId = positions.id "
         participationWhere = f"p.userId = {filters['participantId']} AND "
 
