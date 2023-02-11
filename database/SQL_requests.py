@@ -209,7 +209,8 @@ def selectDocs(filters):
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"positionId = {filters['positionId']} AND " if 'positionId' in filters else "") + \
         (f"LOWER(title) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
-        "1 = 1"
+        "1 = 1 " \
+        "ORDER BY title"
 
 
 selectDocById = \
@@ -220,13 +221,15 @@ selectDocById = \
     "WHERE docs.id = %s"
 
 selectAllPositions = \
-    "SELECT * FROM positions"
+    "SELECT * FROM positions " \
+    "ORDER BY name"
 selectPositionById = \
     "SELECT * FROM positions " \
     "WHERE id = %s"
 
 selectAllPlaces = \
-    "SELECT * FROM places"
+    "SELECT * FROM places " \
+    "ORDER BY name"
 selectPLaceById = \
     "SELECT * FROM places " \
     "WHERE id = %s"
@@ -244,7 +247,9 @@ selectParticipationsByEventid = \
     "SELECT participations.*, users.name username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname FROM participations " \
     "JOIN users ON participations.userid = users.id " \
     "JOIN positions on participations.positionid = positions.id " \
-    "WHERE eventid = %s"
+    "JOIN events on participations.eventid = events.id " \
+    "WHERE eventid = %s " \
+    "ORDER BY events.date, events.timestart"
 
 selectParticipationsCountByEventid = \
     "SELECT COUNT(*) count FROM participations " \
@@ -256,7 +261,8 @@ selectParticipationsUnvoted = \
     "JOIN positions on participations.positionid = positions.id " \
     "JOIN events on participations.eventid = events.id " \
     "WHERE score is NULL AND " \
-    "(events.date + events.timestart) < NOW()"
+    "(events.date + events.timestart) < NOW() " \
+    "ORDER BY events.date, events.timestart"
 
 selectRatings = \
     "SELECT sum(participations.score) as rating, users.id, users.name, users.title, users.avatarimageid " \
@@ -364,9 +370,11 @@ selectAchievementById = \
     "JOIN users ON achievements.authorid = users.id " \
     "WHERE achievements.id = %s"
 
+# %s for name search must be provided as: '%{}%'.format(<YOUR_VAR>)
 selectAchievementBySearchName = \
     f"SELECT * FROM achievements " \
-    f"WHERE LOWER(name) LIKE %s"  #must be provided as: '%{}%'.format(<YOUR_VAR>)
+    f"WHERE LOWER(name) LIKE %s " \
+    f"ORDER BY name"
 
 updateAchievementById = \
     "UPDATE achievements " \
@@ -389,7 +397,8 @@ insertUserAchievement = \
 
 selectUserAchievementsByUserid = \
     "SELECT * FROM usersachievements " \
-    "WHERE userid = %s"
+    "WHERE userid = %s " \
+    "ORDER BY dategotten"
 
 updateUserAchievementLevelById = \
     "UPDATE usersachievements " \
