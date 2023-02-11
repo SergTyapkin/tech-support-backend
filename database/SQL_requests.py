@@ -359,9 +359,6 @@ insertAchievement = \
     "VALUES (%s, %s, %s, %s, %s) " \
     "RETURNING *"
 
-selectAllAchievements = \
-    "SELECT * FROM achievements"
-
 selectAchievementById = \
     "SELECT * FROM achievements " \
     "WHERE id = %s"

@@ -14,6 +14,7 @@ def achievementsGet(userId_logined):
     try:
         req = request.args
         id = req.get('id')
+        search = req.get('search')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -21,8 +22,10 @@ def achievementsGet(userId_logined):
         achievementData = DB.execute(sql.selectAchievementById, [id])
         return jsonResponse(achievementData)
 
+    if search is None: search = ''
+
     # get all achievements list
-    achievements = DB.execute(sql.selectAllAchievements, [], manyResults=True)
+    achievements = DB.execute(sql.selectAchievementBySearchName, ['%{}%'.format(search)], manyResults=True)
     return jsonResponse({"achievements": achievements})
 
 
@@ -82,6 +85,7 @@ def achievementDelete(userData):
 
 
 # ---- USERS ACHIEVEMENTS
+
 @app.route("/user")
 @login_required_return_id
 def userAchievementsGet(userId_logined):
