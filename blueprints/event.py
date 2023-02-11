@@ -58,6 +58,11 @@ def eventCreate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
+    if eventTimeEnd == '':
+        eventTimeEnd = None
+    if eventTimeStart == '':
+        eventTimeStart = None
+
     event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, userData['id']])
     times_to_str(event)
     return jsonResponse(event)
@@ -95,6 +100,11 @@ def eventUpdate(userData):
     if eventTimeStart is None: eventTimeStart = eventData['eventtimestart']
     if eventTimeEnd is None: eventTimeEnd = eventData['eventtimeend']
     if peopleNeeds is None: peopleNeeds = eventData['peopleneeds']
+
+    if eventTimeEnd == '':
+        eventTimeEnd = None
+    if eventTimeStart == '':
+        eventTimeStart = None
 
     event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, id])
     times_to_str(event)

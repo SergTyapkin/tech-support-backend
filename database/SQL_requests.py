@@ -351,3 +351,54 @@ selectImageById = \
 deleteImageByIdAuthor = \
     "DELETE FROM images " \
     "WHERE id = %s AND author = %s"
+
+
+# --- ACHIEVEMENTS ---
+insertAchievement = \
+    "INSERT INTO achievements (name, description, levels, imageId, authorId) " \
+    "VALUES (%s, %s, %s, %s, %s) " \
+    "RETURNING *"
+
+selectAllAchievements = \
+    "SELECT * FROM achievements"
+
+selectAchievementById = \
+    "SELECT * FROM achievements " \
+    "WHERE id = %s"
+
+selectAchievementBySearchName = \
+    f"SELECT * FROM achievements " \
+    f"WHERE LOWER(name) LIKE %s"  #must be provided as: '%{}%'.format(<YOUR_VAR>)
+
+updateAchievementById = \
+    "UPDATE achievements " \
+    "SET name = %s, " \
+    "description = %s, " \
+    "levels = %s, " \
+    "imageid = %s " \
+    "WHERE id = %s"
+
+deleteAchievementById = \
+    "DELETE FROM achievements " \
+    "WHERE id = %s"
+
+
+insertUserAchievement = \
+    "INSERT INTO usersachievements (userId, achievementId, level, authorId) " \
+    "VALUES (%s, %s, %s, %s) " \
+    "RETURNING *"
+
+selectUserAchievementsByUserid = \
+    "SELECT * FROM usersachievements " \
+    "WHERE userid = %s"
+
+updateUserAchievementLevelById = \
+    "UPDATE usersachievements " \
+    "SET level = %s," \
+    "dateGotten = NOW() " \
+    "WHERE id = %s"
+
+deleteUserAchievementById = \
+    "DELETE FROM usersachievements " \
+    "WHERE id = %s"
+

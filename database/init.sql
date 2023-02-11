@@ -75,14 +75,17 @@ CREATE TABLE IF NOT EXISTS achievements (
     name           TEXT NOT NULL,
     description    TEXT DEFAULT NULL,
     levels         INT NOT NULL,
-    imageId        INT REFERENCES images(id) ON DELETE SET NULL
+    imageId        INT REFERENCES images(id) ON DELETE SET NULL,
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS usersAchievements (
     id             SERIAL PRIMARY KEY,
     userId         INT REFERENCES users(id) ON DELETE CASCADE,
     achievementId  INT REFERENCES achievements(id) ON DELETE SET NULL,
-    level          INT NOT NULL DEFAULT 1
+    level          INT NOT NULL DEFAULT 1,
+    dateGotten     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS docs (

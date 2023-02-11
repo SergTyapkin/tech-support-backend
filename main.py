@@ -11,6 +11,7 @@ from blueprints.place import app as place_app
 from blueprints.position import app as position_app
 from blueprints.docs import app as docs_app
 from blueprints.image import app as image_app
+from blueprints.achievements import app as achievements_app
 from middleware import Middleware
 from utils.utils import read_config
 
@@ -28,6 +29,7 @@ app.register_blueprint(place_app,   url_prefix='/place')
 app.register_blueprint(position_app,   url_prefix='/position')
 app.register_blueprint(docs_app,   url_prefix='/docs')
 app.register_blueprint(image_app,   url_prefix='/image')
+app.register_blueprint(achievements_app,   url_prefix='/achievements')
 
 app.config['MAIL_SERVER'] = _config['SMTP_mail_server_host']
 app.config['MAIL_PORT'] = _config['SMTP_mail_server_port']
