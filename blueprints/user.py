@@ -134,7 +134,7 @@ def userGet(userData):
     userData = DB.execute(sql.selectAnotherUserById, [userId])
     if not userData:
         return jsonResponse("Пользователь не найден", HTTP_NOT_FOUND)
-    addCompletedEvents(userData)
+    addEvents(userData)
     addRatingsData(userData)
     return jsonResponse(userData)
 
