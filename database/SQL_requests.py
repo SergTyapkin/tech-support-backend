@@ -69,7 +69,8 @@ def selectUsersByFilters(filters):
         (f"isconfirmedByAdmin = {filters['confirmedByAdmin']} AND " if 'confirmedByAdmin' in filters else "") + \
         (f"isconfirmedEmail = {filters['confirmedEmail']} AND " if 'confirmedEmail' in filters else "") + \
         (f"LOWER(name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
-        "1 = 1"
+        "1 = 1 " \
+        "ORDER BY name"
 
 # ----- UPDATES -----
 updateUserById = \
