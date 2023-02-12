@@ -10,13 +10,16 @@ app = Blueprint('ratings', __name__)
 @app.route("")
 def getRatings():
     resp = DB.execute(sql.selectRatings, manyResults=True)
-    notNoneRatings = []
+    moreZeroRatings = []
+    lowZeroRatings = []
     noneRatings = []
     for rating in resp:
         if rating['rating'] is None:
             rating['rating'] = 0
             noneRatings.append(rating)
+        elif float(rating['rating']) > 0:
+            moreZeroRatings.append(rating)
         else:
-            notNoneRatings.append(rating)
+            lowZeroRatings.append(rating)
 
-    return jsonResponse({'ratings': notNoneRatings + noneRatings})
+    return jsonResponse({'ratings': moreZeroRatings + noneRatings + lowZeroRatings})
