@@ -397,7 +397,8 @@ insertUserAchievement = \
     "RETURNING *"
 
 selectUserAchievementsByUserid = \
-    "SELECT * FROM usersachievements " \
+    "SELECT usersachievements.*, achievements.levels, achievements.imageid FROM usersachievements " \
+    "JOIN achievements on usersachievements.achievementid = achievements.id " \
     "WHERE userid = %s " \
     "ORDER BY dategotten"
 
