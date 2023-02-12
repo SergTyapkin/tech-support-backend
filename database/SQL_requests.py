@@ -189,7 +189,7 @@ def selectEvents(filters):
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"LOWER(events.name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         participationWhere + typeStr + \
-        "ORDER BY events.date, event.timestart"
+        "ORDER BY events.date, events.timestart"
 
 
 selectEventById = \
