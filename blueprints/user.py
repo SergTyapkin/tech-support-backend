@@ -146,15 +146,17 @@ def userCreate():
         name = req['name']
         password = req['password']
         email = req['email']
+        telegram = req.get('telegram')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
     email = email.strip().lower()
     name = name.strip()
+    telegram = telegram.strip().lower()
 
     password = hash_sha256(password)
 
     try:
-        resp = DB.execute(sql.insertUser, [password, email, name])
+        resp = DB.execute(sql.insertUser, [password, email, name, telegram])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 

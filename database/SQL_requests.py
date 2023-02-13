@@ -1,11 +1,11 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, users.name, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId, users.email"
+_userColumns = "users.id, users.name, users.email, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId"
 # ----- INSERTS -----
 insertUser = \
-    "INSERT INTO users (password, avatarImageId, email, name) " \
-    "VALUES (%s, NULL, %s, %s) " \
+    "INSERT INTO users (password, avatarImageId, email, name, telegram) " \
+    "VALUES (%s, NULL, %s, %s, %s) " \
     f"RETURNING {_userColumns}"
 
 insertSession = \
@@ -201,7 +201,7 @@ selectEventById = \
 
 def selectDocs(filters):
     return \
-        f"SELECT docs.*, users.name authorname, users.telegram authortelegram, ured.name lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
+        f"SELECT docs.*, users.name authorname, ured.name lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
         "LEFT JOIN places ON docs.placeId = places.id " \
         "LEFT JOIN positions ON docs.positionId = positions.id " \
         "LEFT JOIN users ON docs.authorId = users.id " + \
@@ -215,7 +215,7 @@ def selectDocs(filters):
 
 
 selectDocById = \
-    "SELECT docs.*, users.name authorname, places.name placename, positions.name positionname FROM docs " \
+    "SELECT docs.*, users.name authorname, users.telegram authortelegram, places.name placename, positions.name positionname FROM docs " \
     "LEFT JOIN users ON docs.authorId = users.id " \
     "LEFT JOIN places ON docs.placeId = places.id " \
     "LEFT JOIN positions ON docs.positionId = positions.id " \
