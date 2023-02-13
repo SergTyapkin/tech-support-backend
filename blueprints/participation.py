@@ -72,11 +72,11 @@ def notParticipateInEvent(userData):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     eventData = DB.execute(sql.selectEventById, [eventId])
-    if eventData is None:
-        jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
+    if not eventData:
+        return jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
 
     if (not eventData['isnext']) and (not userData['isadmin']):
-        jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
+        return jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
     DB.execute(sql.deleteParticipationByEventidUserid, [eventId, userId])
     return jsonResponse("Запись на событие удалена")
