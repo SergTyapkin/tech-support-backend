@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
     isAdmin            BOOLEAN DEFAULT FALSE,
     joinedDate         TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     isConfirmedEmail   BOOLEAN DEFAULT FALSE,
-    isConfirmedByAdmin BOOLEAN DEFAULT FALSE
-    -- avatarImageId    SERIAL -- will adds by ALTER in end
+    isConfirmedByAdmin BOOLEAN DEFAULT FALSE,
+    avatarImageId      TEXT
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     name           TEXT NOT NULL,
     description    TEXT DEFAULT NULL,
     levels         INT NOT NULL,
-    imageId        INT REFERENCES images(id) ON DELETE SET NULL,
+    imageId        TEXT,
     authorId       INT REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -98,23 +98,23 @@ CREATE TABLE IF NOT EXISTS docs (
     lastRedactorId INT REFERENCES users(id) ON DELETE SET NULL
 );
 ----------
-DO $$
-BEGIN
-    IF NOT EXISTS(
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_name = 'users'
-          AND column_name = 'avatarimageid'
-    ) THEN
-        ALTER TABLE users ADD COLUMN
-            avatarImageId INT REFERENCES images(id) ON DELETE SET NULL;
-        ALTER TABLE users ALTER COLUMN avatarImageId
-            DROP NOT NULL;
-        ALTER TABLE users ALTER COLUMN avatarImageId
-            SET DEFAULT NULL;
-    END IF;
-END;
-$$;
+-- DO $$
+-- BEGIN
+--     IF NOT EXISTS(
+--         SELECT column_name
+--         FROM information_schema.columns
+--         WHERE table_name = 'users'
+--           AND column_name = 'avatarimageid'
+--     ) THEN
+--         ALTER TABLE users ADD COLUMN
+--             avatarImageId INT REFERENCES images(id) ON DELETE SET NULL;
+--         ALTER TABLE users ALTER COLUMN avatarImageId
+--             DROP NOT NULL;
+--         ALTER TABLE users ALTER COLUMN avatarImageId
+--             SET DEFAULT NULL;
+--     END IF;
+-- END;
+-- $$;
 
 
 --------

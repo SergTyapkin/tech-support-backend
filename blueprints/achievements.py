@@ -64,7 +64,7 @@ def achievementUpdate(userData):
     if name is None: name = achievementData['name']
     if description is None: description = achievementData['description']
     if levels is None: levels = achievementData['levels']
-    if imageId is None: imageId = achievementData['imageid']
+    if imageId is None and 'imageId' not in req: imageId = achievementData['imageid']
 
     achievement = DB.execute(sql.updateAchievementById, [name, description, levels, imageId, id])
     return jsonResponse(achievement)

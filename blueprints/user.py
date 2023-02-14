@@ -192,7 +192,7 @@ def userUpdate(userData):
     if email is None: email = userData['email']
     if telegram is None: telegram = userData['telegram']
     if title is None: title = userData['title']
-    if avatarImageId is None: avatarImageId = userData['avatarimageid']
+    if avatarImageId is None and 'avatarImageId' not in req: avatarImageId = userData['avatarimageid']
 
     try:
         resp = DB.execute(sql.updateUserById, [name, email, telegram, title, avatarImageId, userId])

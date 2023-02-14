@@ -34,6 +34,11 @@ def read_config(filepath: str) -> dict:
         if "mail_password" not in config:
             config["mail_password"] = os.environ["MAIL_PASSWORD"]
 
+        if config['save_images_to_db'] is False:
+            if not os.path.isdir(config['save_images_folder']):
+                print("Folder to saving images doesn't exists:", config['save_images_folder'])
+                exit()
+
         return config
     except Exception as e:
         print("Can't open and serialize json:", filepath)

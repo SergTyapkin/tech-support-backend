@@ -206,7 +206,6 @@ def selectDocs(filters):
         "LEFT JOIN positions ON docs.positionId = positions.id " \
         "LEFT JOIN users ON docs.authorId = users.id " + \
         "LEFT JOIN users ured ON docs.lastRedactorId = ured.id " + \
-        "LEFT JOIN users ured ON docs.lastRedactorId = ured.id " + \
         "WHERE " + \
         (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
         (f"positionId = {filters['positionId']} AND " if 'positionId' in filters else "") + \
