@@ -54,7 +54,10 @@ def participateInEvent(userData):
     if (not eventData['isnext']) and (not userData['isadmin']):
         jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
-    response = DB.execute(sql.insertParticipation, [eventId, userId, positionId])
+    try:
+        response = DB.execute(sql.insertParticipation, [eventId, userId, positionId])
+    except:
+        return jsonResponse("Пользователь уже записан на это мероприятие", HTTP_DATA_CONFLICT)
     return jsonResponse(response)
 
 
