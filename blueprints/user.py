@@ -143,20 +143,24 @@ def userGet(userData):
 def userCreate():
     try:
         req = request.json
-        name = req['name']
+        firstName = req['firstname']
+        secondName = req['secondname']
+        thirdName = req['thirdname']
         password = req['password']
         email = req['email']
         telegram = req.get('telegram')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
     email = email.strip().lower()
-    name = name.strip()
+    firstName = firstName.strip()
+    secondName = secondName.strip()
+    thirdName = thirdName.strip()
     telegram = telegram.strip().lower()
 
     password = hash_sha256(password)
 
     try:
-        resp = DB.execute(sql.insertUser, [password, email, name, telegram])
+        resp = DB.execute(sql.insertUser, [password, email, firstName, secondName, thirdName, telegram])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
@@ -169,7 +173,9 @@ def userUpdate(userData):
     try:
         req = request.json
         userId = req['userId']
-        name = req.get('name')
+        firstName = req.get('firstName')
+        secondName = req.get('secondName')
+        thirdName = req.get('thirdName')
         email = req.get('email')
         telegram = req.get('telegram')
         title = req.get('title')
@@ -186,16 +192,20 @@ def userUpdate(userData):
 
     if email: email = email.strip().lower()
     if telegram: telegram = telegram.strip().lower()
-    if name: name = name.strip()
+    if firstName: firstName = firstName.strip()
+    if secondName: secondName = secondName.strip()
+    if thirdName: thirdName = thirdName.strip()
 
-    if name is None: name = userData['name']
+    if firstName is None: firstName = userData['firstname']
+    if secondName is None: secondName = userData['secondname']
+    if thirdName is None: thirdName = userData['thirdname']
     if email is None: email = userData['email']
     if telegram is None: telegram = userData['telegram']
     if title is None: title = userData['title']
     if avatarImageId is None and 'avatarImageId' not in req: avatarImageId = userData['avatarimageid']
 
     try:
-        resp = DB.execute(sql.updateUserById, [name, email, telegram, title, avatarImageId, userId])
+        resp = DB.execute(sql.updateUserById, [firstName, secondName, thirdName, email, telegram, title, avatarImageId, userId])
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
@@ -255,7 +265,7 @@ def userRestorePasswordSendEmail():
 
     send_email(email,
                "Восстановление пароля на TechSupport",
-               emails.restorePassword(f"/image/{userData['avatarimageid']}", userData['name'], secretCode))
+               emails.restorePassword(f"/image/{userData['avatarimageid']}", userData['firstname'] + ' ' + userData['secondname'], secretCode))
 
     return jsonResponse("Ссылка для восстановления выслана на почту " + email)
 
@@ -302,7 +312,7 @@ def userAuthByEmailCode():
         send_email(email,
                    "Вход на TechSupport",
                    emails.loginByCode(f"/image/{avatarImageId}" if avatarImageId is not None else None,
-                                      userData['name'], secretCode))
+                                      userData['firstname'] + ' ' + userData['secondname'], secretCode))
 
         return jsonResponse("Код выслан на почту " + email)
 
@@ -326,7 +336,7 @@ def userConfirmEmailSendMessage(userData):
 
     send_email(email,
                "Подтверждение регистрации на TechSupport",
-               emails.confirmEmail(f"/image/{userData['avatarimageid']}", userData['name'], secretCode))
+               emails.confirmEmail(f"/image/{userData['avatarimageid']}", userData['firstname'] + ' ' + userData['secondname'], secretCode))
 
     return jsonResponse("Ссылка для подтверждения email выслана на почту " + email)
 

@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS users (
     password           TEXT NOT NULL,
     telegram           TEXT DEFAULT NULL,
     email              TEXT NOT NULL UNIQUE,
-    name               TEXT DEFAULT NULL,
+    firstName          TEXT NOT NULL,
+    secondName         TEXT DEFAULT NULL,
+    thirdName          TEXT DEFAULT NULL,
     title              TEXT DEFAULT NULL,
     isAdmin            BOOLEAN DEFAULT FALSE,
     joinedDate         TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
@@ -85,7 +87,8 @@ CREATE TABLE IF NOT EXISTS usersAchievements (
     achievementId  INT REFERENCES achievements(id) ON DELETE CASCADE,
     level          INT NOT NULL DEFAULT 1,
     dateGotten     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    authorId       INT REFERENCES users(id) ON DELETE SET NULL
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL,
+    UNIQUE (userId, achievementId, level)
 );
 
 CREATE TABLE IF NOT EXISTS docs (

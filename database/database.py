@@ -26,10 +26,13 @@ class Database:
             self.db.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         except psycopg2.OperationalError as err:
             print('\n/*/', err)
+
             if err.args[0] == 2003:
                 print('Неверный формат host')
+                exit()
             elif err.args[0] == 1045:
                 print('Неверное имя пользователя или пароль')
+                exit()
             elif err.args[0] == 1049:
                 print('Не найдена база данных')
                 self.db = psycopg2.connect(
@@ -50,11 +53,11 @@ class Database:
                     else:
                         print('\n/*/', "Ошибка при создании базы данных:")
                         print('\n/*/', error)
+                    exit()
                     return
                 finally:
                     self.cursor.close()
-            else:
-                print('Неизвестная ошибка при подключении к БД')
+            print('Неизвестная ошибка при подключении к БД')
             exit()
             return
 
