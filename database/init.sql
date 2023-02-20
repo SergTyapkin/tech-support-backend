@@ -137,3 +137,45 @@ CREATE TRIGGER before_update
     BEFORE UPDATE ON users
     FOR EACH ROW
         EXECUTE PROCEDURE set_email_not_confirmed();
+
+--------
+CREATE OR REPLACE FUNCTION decrease_achievements_levels() RETURNS TRIGGER AS
+$$
+BEGIN
+    UPDATE usersAchievements
+    SET level = NEW.levels
+    WHERE achievementId = NEW.id
+    AND level > NEW.levels;
+
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS after_update ON achievements;
+CREATE TRIGGER after_update
+    BEFORE UPDATE ON achievements
+    FOR EACH ROW
+        EXECUTE PROCEDURE decrease_achievements_levels();
+
+--------
+CREATE OR REPLACE FUNCTION max_achievement_level_limit() RETURNS TRIGGER AS
+$$
+DECLARE
+    maxLevels INT;
+BEGIN
+    SELECT levels INTO maxLevels FROM achievements
+    WHERE id = NEW.achievementId;
+
+    IF NEW.level > maxLevels THEN
+        NEW.level = maxLevels;
+    END IF;
+
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS before_insert ON usersAchievements;
+CREATE TRIGGER before_insert
+    BEFORE UPDATE ON usersAchievements
+    FOR EACH ROW
+        EXECUTE PROCEDURE max_achievement_level_limit();
