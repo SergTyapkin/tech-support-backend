@@ -182,7 +182,7 @@ def selectEvents(filters):
         participationWhere = f"p.userId = {filters['participantId']} AND "
 
     return \
-        f"SELECT events.*, (users.firstName  || ' ' || users.secondName) as authorname, places.name placename {participationSelect}, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
+        f"SELECT events.*, (users.firstName  || ' ' || users.thirdName) as authorname, places.name placename {participationSelect}, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
         "LEFT JOIN places ON events.placeId = places.id " \
         "LEFT JOIN users ON events.authorId = users.id " + \
         participationJoin + \
@@ -195,7 +195,7 @@ def selectEvents(filters):
 
 
 selectEventById = \
-    "SELECT events.*, (users.firstName  || ' ' || users.secondName) as authorname, users.telegram authortelegram, places.name placename, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
+    "SELECT events.*, (users.firstName  || ' ' || users.thirdName) as authorname, users.telegram authortelegram, places.name placename, (events.date + events.timeEnd >= NOW()) isnext FROM events " \
     "LEFT JOIN users ON events.authorId = users.id " \
     "LEFT JOIN places ON events.placeId = places.id " \
     "WHERE events.id = %s"
@@ -203,7 +203,7 @@ selectEventById = \
 
 def selectDocs(filters):
     return \
-        f"SELECT docs.*, (users.firstName  || ' ' || users.secondName) as authorname, ured.firstName lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
+        f"SELECT docs.*, (users.firstName  || ' ' || users.thirdName) as authorname, ured.firstName lastredactorname, ured.telegram lastredactortelegram, places.name placename, positions.name positionname FROM docs " \
         "LEFT JOIN places ON docs.placeId = places.id " \
         "LEFT JOIN positions ON docs.positionId = positions.id " \
         "LEFT JOIN users ON docs.authorId = users.id " + \
@@ -217,7 +217,7 @@ def selectDocs(filters):
 
 
 selectDocById = \
-    "SELECT docs.*, (users.firstName  || ' ' || users.secondName) as authorname, users.telegram authortelegram, places.name placename, positions.name positionname FROM docs " \
+    "SELECT docs.*, (users.firstName  || ' ' || users.thirdName) as authorname, users.telegram authortelegram, places.name placename, positions.name positionname FROM docs " \
     "LEFT JOIN users ON docs.authorId = users.id " \
     "LEFT JOIN places ON docs.placeId = places.id " \
     "LEFT JOIN positions ON docs.positionId = positions.id " \
@@ -247,7 +247,7 @@ selectParticipationByUseridEventid = \
     "eventid = %s"
 
 selectParticipationsByEventid = \
-    "SELECT participations.*, (users.firstName  || ' ' || users.secondName) as username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname FROM participations " \
+    "SELECT participations.*, (users.firstName  || ' ' || users.thirdName) as username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname FROM participations " \
     "JOIN users ON participations.userid = users.id " \
     "JOIN positions on participations.positionid = positions.id " \
     "JOIN events on participations.eventid = events.id " \
@@ -259,7 +259,7 @@ selectParticipationsCountByEventid = \
     "WHERE eventid = %s"
 
 selectParticipationsUnvoted = \
-    "SELECT participations.*, (users.firstName  || ' ' || users.secondName) as username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname, events.name eventname, events.date eventdate FROM participations " \
+    "SELECT participations.*, (users.firstName  || ' ' || users.thirdName) as username, users.avatarImageId userimageid, users.title usertitle, positions.name positionname, events.name eventname, events.date eventdate FROM participations " \
     "JOIN users ON participations.userid = users.id " \
     "JOIN positions on participations.positionid = positions.id " \
     "JOIN events on participations.eventid = events.id " \
@@ -268,7 +268,7 @@ selectParticipationsUnvoted = \
     "ORDER BY events.date, events.timestart"
 
 selectRatings = \
-    "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.secondName) as name, users.title, users.avatarimageid " \
+    "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.thirdName) as name, users.title, users.avatarimageid " \
     "FROM users " \
     "LEFT JOIN participations ON participations.userId = users.id " \
     "WHERE isConfirmedEmail = True AND isConfirmedByAdmin = True " \
@@ -369,7 +369,7 @@ insertAchievement = \
     "RETURNING *"
 
 selectAchievementById = \
-    "SELECT achievements.*, (users.firstName  || ' ' || users.secondName) as authorname, users.telegram authortelegram FROM achievements " \
+    "SELECT achievements.*, (users.firstName  || ' ' || users.thirdName) as authorname, users.telegram authortelegram FROM achievements " \
     "JOIN users ON achievements.authorid = users.id " \
     "WHERE achievements.id = %s"
 
