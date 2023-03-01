@@ -143,9 +143,9 @@ def userGet(userData):
 def userCreate():
     try:
         req = request.json
-        firstName = req['firstname']
-        secondName = req['secondname']
-        thirdName = req['thirdname']
+        firstName = req['firstName']
+        secondName = req['secondName']
+        thirdName = req['thirdName']
         password = req['password']
         email = req['email']
         telegram = req.get('telegram')
