@@ -380,7 +380,7 @@ selectAchievementById = \
     "WHERE achievements.id = %s"
 
 selectAchievementUsersAchieved = \
-    "SELECT users.* FROM usersAchievements " \
+    "SELECT users.id, users.avatarimageid, (users.firstName  || ' ' || users.thirdName) as username FROM usersAchievements " \
     "JOIN users ON usersAchievements.userId = users.id " \
     "WHERE usersAchievements.achievementId = %s"
 
