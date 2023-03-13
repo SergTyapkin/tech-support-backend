@@ -20,6 +20,8 @@ def achievementsGet(userId_logined):
 
     if id is not None:  # get single achievement
         achievementData = DB.execute(sql.selectAchievementById, [id])
+        usersAchieved = DB.execute(sql.selectAchievementUsersAchieved, [id], manyResults=True)
+        achievementData['usersachieved'] = usersAchieved
         return jsonResponse(achievementData)
 
     if search is None: search = ''

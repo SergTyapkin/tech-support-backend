@@ -41,6 +41,7 @@ def participateInEvent(userData):
         eventId = req['eventId']
         userId = req['userId']
         positionId = req['positionId']
+        comment = req.get('comment')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -49,13 +50,13 @@ def participateInEvent(userData):
 
     eventData = DB.execute(sql.selectEventById, [eventId])
     if eventData is None:
-        jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
+        jsonResponse("Такого события не существует", HTTP_NOT_FOUND)
 
     if (not eventData['isnext']) and (not userData['isadmin']):
         jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
     try:
-        response = DB.execute(sql.insertParticipation, [eventId, userId, positionId])
+        response = DB.execute(sql.insertParticipation, [eventId, userId, positionId, comment])
     except:
         return jsonResponse("Пользователь уже записан на это мероприятие", HTTP_DATA_CONFLICT)
     return jsonResponse(response)
@@ -106,4 +107,26 @@ def updateParticipationData(userData):
     if comment is None: comment = participationData['admincomment']
 
     response = DB.execute(sql.updateParticipationById, [positionId, score, comment, id])
+    return jsonResponse(response)
+
+
+@app.route("/event/comment", methods=["PUT"])
+@login_required
+def updateSelfParticipationComment(userData):
+    try:
+        req = request.json
+        id = req['id']
+        comment = req.get('comment')
+    except:
+        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
+
+    participationData = DB.execute(sql.selectParticipationById, [id])
+    if participationData is None:
+        jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
+    if participationData['userid'] != userData['id']:
+        jsonResponse("Нет прав на редактирование чужого комментария", HTTP_NO_PERMISSIONS)
+
+    if comment is None: comment = participationData['admincomment']
+
+    response = DB.execute(sql.updateParticipationCommentById, [comment, id])
     return jsonResponse(response)

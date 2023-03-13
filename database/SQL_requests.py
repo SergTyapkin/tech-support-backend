@@ -142,8 +142,8 @@ insertEvent = \
     "RETURNING *"
 
 insertParticipation = \
-    "INSERT INTO participations (eventId, userId, positionId) " \
-    "VALUES (%s, %s, %s) " \
+    "INSERT INTO participations (eventId, userId, positionId, adminComment) " \
+    "VALUES (%s, %s, %s, %s) " \
     "RETURNING *"
 
 insertPosition = \
@@ -310,6 +310,12 @@ updatePositionById = \
     "WHERE id = %s " \
     "RETURNING *"
 
+updateParticipationCommentById = \
+    "UPDATE participations SET " \
+    "adminComment = %s " \
+    "WHERE id = %s " \
+    "RETURNING *"
+
 updatePlaceById = \
     "UPDATE places SET " \
     "name = %s " \
@@ -372,6 +378,11 @@ selectAchievementById = \
     "SELECT achievements.*, (users.firstName  || ' ' || users.thirdName) as authorname, users.telegram authortelegram FROM achievements " \
     "JOIN users ON achievements.authorid = users.id " \
     "WHERE achievements.id = %s"
+
+selectAchievementUsersAchieved = \
+    "SELECT users.* FROM usersAchievements " \
+    "JOIN users ON usersAchievements.userId = users.id " \
+    "WHERE usersAchievements.achievementId = %s"
 
 # %s for name search must be provided as: '%{}%'.format(<YOUR_VAR>)
 selectAchievementBySearchName = \
