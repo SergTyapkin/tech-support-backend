@@ -115,6 +115,10 @@ def userAchievementCreate(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
+    userAchievements = DB.execute(sql.selectUserAchievementsByUserid, [userId], manyResults=True)
+    for ach in userAchievements:  # delete another levels of this achievement
+        if (ach['userid'] == userId) and (ach['achievementid'] == achievementId):
+            DB.execute(sql.deleteUserAchievementById, [ach['id']])
     achievement = DB.execute(sql.insertUserAchievement, [userId, achievementId, level, userData['id']])
     return jsonResponse(achievement)
 

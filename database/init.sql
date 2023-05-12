@@ -159,6 +159,24 @@ CREATE TRIGGER after_update
         EXECUTE PROCEDURE decrease_achievements_levels();
 
 --------
+-- CREATE OR REPLACE FUNCTION delete_another_levels_of_achievement() RETURNS TRIGGER AS
+-- $$
+-- BEGIN
+--     DELETE FROM usersAchievements
+--     WHERE achievementId = NEW.achievementId
+--       AND userId = NEW.userId;
+--
+--     RETURN NEW;
+-- END
+-- $$ LANGUAGE plpgsql;
+--
+-- DROP TRIGGER IF EXISTS before_insert ON usersAchievements;
+-- CREATE TRIGGER before_insert
+--     AFTER INSERT ON usersAchievements
+--     FOR EACH ROW
+--         EXECUTE PROCEDURE delete_another_levels_of_achievement();
+
+--------
 CREATE OR REPLACE FUNCTION max_achievement_level_limit() RETURNS TRIGGER AS
 $$
 DECLARE
@@ -167,6 +185,9 @@ BEGIN
     SELECT levels INTO maxLevels FROM achievements
     WHERE id = NEW.achievementId;
 
+    IF NEW.level < 1 THEN
+        NEW.level = 1;
+    END IF;
     IF NEW.level > maxLevels THEN
         NEW.level = maxLevels;
     END IF;
