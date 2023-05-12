@@ -27,6 +27,13 @@ def read_config(filepath: str) -> dict:
         file = open(filepath, "r")
         config = json.load(file)
         file.close()
+
+        if "db_password" not in config:
+            config["db_password"] = os.environ["DATABASE_PASSWORD"]
+
+        if "mail_password" not in config:
+            config["mail_password"] = os.environ["MAIL_PASSWORD"]
+
         return config
     except Exception as e:
         print("Can't open and serialize json:", filepath)
@@ -36,12 +43,6 @@ def read_config(filepath: str) -> dict:
 
 def read_app_config(filepath: str) -> dict:
     config = read_config(filepath)
-
-    if "db_password" not in config:
-        config["db_password"] = os.environ["DATABASE_PASSWORD"]
-
-    if "mail_password" not in config:
-        config["mail_password"] = os.environ["MAIL_PASSWORD"]
 
     if config['save_images_to_db'] is False:
         if not os.path.isdir(config['save_images_folder']):
