@@ -113,14 +113,13 @@ def userGet(userData):
         list_times_to_str(allEvents)
         resEvents = []
         for event in allEvents:
-            if event["score"] is None:
-                continue
-            resEvents.append({
-                "id": event["id"],
-                "name": event["name"],
-                "position": event["positionname"],
-                "score": event["score"],
-            })
+            if event["score"] is not None:
+                resEvents.append({
+                    "id": event["id"],
+                    "name": event["name"],
+                    "position": event["positionname"],
+                    "score": event["score"],
+                })
         userData['completedevents'] = resEvents
 
     if userId is None:  # return self user data

@@ -1,8 +1,8 @@
 from database.database import Database
-from utils.utils import read_config
+from utils.utils import read_app_config
 
 
-config = read_config('config.json')
+config = read_app_config('config.json')
 DB = Database(
     host=config['db_host'],
     port=config['db_port'],

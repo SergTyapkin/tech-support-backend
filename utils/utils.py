@@ -27,23 +27,28 @@ def read_config(filepath: str) -> dict:
         file = open(filepath, "r")
         config = json.load(file)
         file.close()
-
-        if "db_password" not in config:
-            config["db_password"] = os.environ["DATABASE_PASSWORD"]
-
-        if "mail_password" not in config:
-            config["mail_password"] = os.environ["MAIL_PASSWORD"]
-
-        if config['save_images_to_db'] is False:
-            if not os.path.isdir(config['save_images_folder']):
-                print("Folder to saving images doesn't exists:", config['save_images_folder'])
-                exit()
-
         return config
     except Exception as e:
         print("Can't open and serialize json:", filepath)
         print(e)
         exit()
+
+
+def read_app_config(filepath: str) -> dict:
+    config = read_config(filepath)
+
+    if "db_password" not in config:
+        config["db_password"] = os.environ["DATABASE_PASSWORD"]
+
+    if "mail_password" not in config:
+        config["mail_password"] = os.environ["MAIL_PASSWORD"]
+
+    if config['save_images_to_db'] is False:
+        if not os.path.isdir(config['save_images_folder']):
+            print("Folder to saving images doesn't exists:", config['save_images_folder'])
+            exit()
+
+    return config
 
 
 def count_lines(filename, chunk_size=4096) -> int:

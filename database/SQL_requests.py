@@ -267,6 +267,12 @@ selectParticipationsUnvoted = \
     "(events.date + events.timestart) < NOW() " \
     "ORDER BY events.date, events.timestart"
 
+selectUserParticipationPlaces = \
+    "SELECT events.placeId FROM participations " \
+    "JOIN events ON participations.eventid = events.id " \
+    "WHERE userid = %s " \
+    "GROUP BY events.placeId"
+
 selectRatings = \
     "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.thirdName) as name, users.title, users.avatarimageid " \
     "FROM users " \
@@ -426,4 +432,9 @@ updateUserAchievementLevelById = \
 deleteUserAchievementById = \
     "DELETE FROM usersachievements " \
     "WHERE id = %s"
+
+deleteUserAchievementByUserIdAchievementId = \
+    "DELETE FROM usersachievements " \
+    "WHERE userId = %s " \
+    "AND achievementId = %s"
 

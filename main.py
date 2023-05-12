@@ -13,9 +13,9 @@ from blueprints.docs import app as docs_app
 from blueprints.image import app as image_app
 from blueprints.achievements import app as achievements_app
 from middleware import Middleware
-from utils.utils import read_config
+from utils.utils import read_app_config
 
-_config = read_config('config.json')
+_config = read_app_config('config.json')
 
 app = Flask(__name__)
 app.wsgi_app = Middleware(app.wsgi_app, url_prefix='/api', cors_origins=_config['cors-origins'])
