@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     description    TEXT DEFAULT NULL,
     levels         INT NOT NULL,
     imageId        TEXT,
+    special        BOOLEAN NOT NULL DEFAULT FALSE,
     authorId       INT REFERENCES users(id) ON DELETE SET NULL
 );
 

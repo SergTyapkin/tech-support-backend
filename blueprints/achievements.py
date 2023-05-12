@@ -39,10 +39,11 @@ def achievementCreate(userData):
         name = req['name']
         description = req.get('description')
         levels = req['levels']
+        special = req['special']
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    achievement = DB.execute(sql.insertAchievement, [name, description, levels, userData['id']])
+    achievement = DB.execute(sql.insertAchievement, [name, description, levels, userData['id'], special])
     return jsonResponse(achievement)
 
 
@@ -56,6 +57,7 @@ def achievementUpdate(userData):
         description = req.get('description')
         levels = req.get('levels')
         imageId = req.get('imageId')
+        special = req.get('special')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -67,8 +69,9 @@ def achievementUpdate(userData):
     if description is None: description = achievementData['description']
     if levels is None: levels = achievementData['levels']
     if imageId is None and 'imageId' not in req: imageId = achievementData['imageid']
+    if special is None: special = achievementData['special']
 
-    achievement = DB.execute(sql.updateAchievementById, [name, description, levels, imageId, id])
+    achievement = DB.execute(sql.updateAchievementById, [name, description, levels, imageId, special, id])
     return jsonResponse(achievement)
 
 
