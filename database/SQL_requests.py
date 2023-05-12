@@ -370,8 +370,8 @@ deleteImageByIdAuthor = \
 
 # --- ACHIEVEMENTS ---
 insertAchievement = \
-    "INSERT INTO achievements (name, description, levels, imageId, authorId) " \
-    "VALUES (%s, %s, %s, NULL, %s) " \
+    "INSERT INTO achievements (name, description, levels, imageId, authorId, special) " \
+    "VALUES (%s, %s, %s, NULL, %s, %s) " \
     "RETURNING *"
 
 selectAchievementById = \
@@ -395,7 +395,8 @@ updateAchievementById = \
     "SET name = %s, " \
     "description = %s, " \
     "levels = %s, " \
-    "imageid = %s " \
+    "imageid = %s, " \
+    "special = %s " \
     "WHERE id = %s " \
     "RETURNING *"
 
@@ -410,7 +411,7 @@ insertUserAchievement = \
     "RETURNING *"
 
 selectUserAchievementsByUserid = \
-    "SELECT usersachievements.*, achievements.levels, achievements.imageid FROM usersachievements " \
+    "SELECT usersachievements.*, achievements.levels, achievements.imageid, achievements.special FROM usersachievements " \
     "JOIN achievements on usersachievements.achievementid = achievements.id " \
     "WHERE userid = %s " \
     "ORDER BY dategotten"
