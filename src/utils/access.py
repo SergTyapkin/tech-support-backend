@@ -3,10 +3,10 @@ from functools import wraps
 
 from flask import request
 
-import database.SQL_requests as sql
-from connections import DB
-from constants import *
-from utils.utils import *
+import src.database.SQL_requests as sql
+from src.connections import DB
+from src.constants import *
+from src.utils.utils import *
 
 
 def hash_sha256(auth_string: str) -> str:

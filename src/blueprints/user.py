@@ -3,12 +3,11 @@ import uuid
 
 from flask import Blueprint
 
-from connections import DB
-from utils.access import *
-from constants import *
-from utils.utils import *
+from src.utils.access import *
+from src.constants import *
+from src.utils.utils import *
 
-import email_templates as emails
+from src import email_templates as emails
 
 app = Blueprint('user', __name__)
 

@@ -1,9 +1,8 @@
 from flask import Blueprint
 
-from connections import DB
-from utils.access import *
-from constants import *
-from utils.utils import *
+from src.utils.access import *
+from src.constants import *
+from src.utils.utils import *
 
 app = Blueprint('admin', __name__)
 

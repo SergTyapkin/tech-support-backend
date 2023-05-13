@@ -1,12 +1,11 @@
 import datetime
 import json
 import os
-from datetime import time
 
 from flask import jsonify, make_response, current_app
 from flask_mail import Mail, Message
 
-from constants import HTTP_OK
+from src.constants import HTTP_OK
 
 
 def str_between(string: (str, bytes), start: (str, bytes), end: (str, bytes), replace_to: (str, bytes) = None):

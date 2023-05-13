@@ -5,9 +5,9 @@ from io import BytesIO
 from PIL import Image
 from flask import Blueprint, Response
 
-from connections import config, DB
-from utils.access import *
-from utils.utils import *
+from src.connections import config
+from src.utils.access import *
+from src.utils.utils import *
 
 import base64
 

@@ -1,9 +1,9 @@
-from connections import DB
-from utils.utils import read_config
-import database.SQL_requests as sql
+from src.connections import DB
+from src.utils.utils import read_config
+import src.database.SQL_requests as sql
 
 
-achievementsConfig = read_config('autoAchievementsConfig.json')
+achievementsConfig = read_config('./configs/autoAchievementsConfig.json')
 
 
 def getUserEventsCount(userId):

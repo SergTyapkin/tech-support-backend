@@ -2,20 +2,20 @@ import os
 from flask import Flask
 from flask_mail import Mail
 
-from blueprints.user import app as user_app
-from blueprints.admin import app as admin_app
-from blueprints.event import app as event_app
-from blueprints.ratings import app as ratings_app
-from blueprints.participation import app as participation_app
-from blueprints.place import app as place_app
-from blueprints.position import app as position_app
-from blueprints.docs import app as docs_app
-from blueprints.image import app as image_app
-from blueprints.achievements import app as achievements_app
+from src.blueprints.user import app as user_app
+from src.blueprints.admin import app as admin_app
+from src.blueprints.event import app as event_app
+from src.blueprints.ratings import app as ratings_app
+from src.blueprints.participation import app as participation_app
+from src.blueprints.place import app as place_app
+from src.blueprints.position import app as position_app
+from src.blueprints.docs import app as docs_app
+from src.blueprints.image import app as image_app
+from src.blueprints.achievements import app as achievements_app
 from middleware import Middleware
-from utils.utils import read_app_config
+from src.utils.utils import read_app_config
 
-_config = read_app_config('config.json')
+_config = read_app_config('./configs/config.json')
 
 app = Flask(__name__)
 app.wsgi_app = Middleware(app.wsgi_app, url_prefix='/api', cors_origins=_config['cors-origins'])

@@ -1,8 +1,7 @@
 from flask import Blueprint
 
-from connections import DB
-from utils.access import *
-from utils.utils import *
+from src.utils.access import *
+from src.utils.utils import *
 
 
 app = Blueprint('participations', __name__)

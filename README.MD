@@ -1,4 +1,5 @@
 # TechSupport backend v1.0
+Пример деплоя и подробная инструкция: https://github.com/SergTyapkin/tech-support-deploy
 
 ---
 ### Запуск для разработки:

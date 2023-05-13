@@ -62,7 +62,7 @@ class Database:
             return
 
         try:
-            with open('database/init.sql') as initFile:
+            with open('./configs/init.sql') as initFile:
                 initText = initFile.read()
             cur = self.db.cursor()
             cur.execute(initText)
