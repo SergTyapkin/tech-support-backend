@@ -12,7 +12,7 @@ from src.blueprints.position import app as position_app
 from src.blueprints.docs import app as docs_app
 from src.blueprints.image import app as image_app
 from src.blueprints.achievements import app as achievements_app
-from middleware import Middleware
+from src.middleware import Middleware
 from src.utils.utils import read_app_config
 
 _config = read_app_config('./configs/config.json')
