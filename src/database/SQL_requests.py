@@ -267,10 +267,11 @@ selectParticipationsUnvoted = \
     "(events.date + events.timestart) < NOW() " \
     "ORDER BY events.date, events.timestart"
 
-selectUserParticipationPlaces = \
+selectUserVotedParticipationsPlaces = \
     "SELECT events.placeId FROM participations " \
     "JOIN events ON participations.eventid = events.id " \
     "WHERE userid = %s " \
+    "AND score is not NULL " \
     "GROUP BY events.placeId"
 
 selectRatings = \

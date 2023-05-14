@@ -64,7 +64,7 @@ def checkAchievementAllPlaces(user):
     achievementId = achievementsConfig['allPlacesAchievementId']
     userId = user['id']
 
-    hasPlaces = DB.execute(sql.selectUserParticipationPlaces, [userId], manyResults=True)
+    hasPlaces = DB.execute(sql.selectUserVotedParticipationsPlaces, [userId], manyResults=True)
     hasPlaces = set(map(lambda place: place['placeid'], hasPlaces))
     allPlaces = DB.execute(sql.selectAllPlaces, manyResults=True)
     allPlaces = set(map(lambda place: place['id'], allPlaces))
