@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     canConfirmNewUsers     BOOLEAN DEFAULT FALSE,
     canEditEvents          BOOLEAN DEFAULT FALSE,
     canEditUsersTitles     BOOLEAN DEFAULT FALSE,
+    canEditUsersData       BOOLEAN DEFAULT FALSE,
     canEditParticipations  BOOLEAN DEFAULT FALSE,
     canEditDocs            BOOLEAN DEFAULT FALSE,
     canEditPlaces          BOOLEAN DEFAULT FALSE,
