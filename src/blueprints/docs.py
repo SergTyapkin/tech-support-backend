@@ -32,7 +32,7 @@ def docsGet(userId):
 
 
 @app.route("", methods=["POST"])
-@login_required_admin
+@login_and_can_edit_docs_required
 def eventCreate(userData):
     try:
         req = request.json
@@ -49,7 +49,7 @@ def eventCreate(userData):
 
 
 @app.route("", methods=["PUT"])
-@login_required_admin
+@login_and_can_edit_docs_required
 def eventUpdate(userData):
     try:
         req = request.json
@@ -76,7 +76,7 @@ def eventUpdate(userData):
 
 
 @app.route("", methods=["DELETE"])
-@login_required_admin
+@login_and_can_edit_docs_required
 def eventDelete(userData):
     try:
         req = request.json

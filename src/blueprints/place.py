@@ -27,7 +27,7 @@ def placeGet(userId):
 
 
 @app.route("", methods=["POST"])
-@login_required_admin
+@login_and_can_edit_places_required
 def placeCreate(userData):
     try:
         req = request.json
@@ -40,7 +40,7 @@ def placeCreate(userData):
 
 
 @app.route("", methods=["PUT"])
-@login_required_admin
+@login_and_can_edit_places_required
 def placeUpdate(userData):
     try:
         req = request.json
@@ -56,7 +56,7 @@ def placeUpdate(userData):
 
 
 @app.route("", methods=["DELETE"])
-@login_required_admin
+@login_and_can_edit_places_required
 def placeDelete(userData):
     try:
         req = request.json

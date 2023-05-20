@@ -182,10 +182,10 @@ def userUpdate(userData):
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
     if userData['id'] != userId:
-        if not userData['isadmin']:
+        if not (userData['canedituserstitles'] or userData['caneditusersdata']):
             return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
         userData = DB.execute(sql.selectUserById, [userId])
-    elif (not userData['isadmin']) and  (title is not None):
+    elif (not userData['canedituserstitles']) and (title is not None):
         return jsonResponse("Изменять титул могут только админы", HTTP_NO_PERMISSIONS)
 
     if email: email = email.strip().lower()
@@ -219,7 +219,7 @@ def userDelete(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userData['id'] != userId) and (not userData['isadmin']):
+    if (userData['id'] != userId) and (not userData['caneditusersdata']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     DB.execute(sql.deleteUserById, [userId])

@@ -31,7 +31,7 @@ def achievementsGet(userId_logined):
 
 
 @app.route("", methods=["POST"])
-@login_required_admin
+@login_and_can_edit_achievements_required
 def achievementCreate(userData):
     try:
         req = request.json
@@ -47,7 +47,7 @@ def achievementCreate(userData):
 
 
 @app.route("", methods=["PUT"])
-@login_required_admin
+@login_and_can_edit_achievements_required
 def achievementUpdate(userData):
     try:
         req = request.json
@@ -75,7 +75,7 @@ def achievementUpdate(userData):
 
 
 @app.route("", methods=["DELETE"])
-@login_required_admin
+@login_and_can_edit_achievements_required
 def achievementDelete(userData):
     try:
         req = request.json
@@ -104,7 +104,7 @@ def userAchievementsGet(userId_logined):
 
 
 @app.route("/user", methods=["POST"])
-@login_required_admin
+@login_and_can_assign_achievements_required
 def userAchievementCreate(userData):
     try:
         req = request.json
@@ -123,7 +123,7 @@ def userAchievementCreate(userData):
 
 
 @app.route("/user", methods=["PUT"])
-@login_required_admin
+@login_and_can_assign_achievements_required
 def userAchievementUpdate(userData):
     try:
         req = request.json
@@ -137,7 +137,7 @@ def userAchievementUpdate(userData):
 
 
 @app.route("/user", methods=["DELETE"])
-@login_required_admin
+@login_and_can_assign_achievements_required
 def userAchievementDelete(userData):
     try:
         req = request.json

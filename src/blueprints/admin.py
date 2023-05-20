@@ -8,7 +8,7 @@ app = Blueprint('admin', __name__)
 
 
 @app.route("/sql", methods=["POST"])
-@login_required_admin
+@login_and_can_execute_sql_required
 def executeSQL(userData):
     try:
         req = request.json
@@ -25,7 +25,7 @@ def executeSQL(userData):
 
 
 @app.route("/user/confirmation", methods=["PUT"])
-@login_required_admin
+@login_and_can_confirm_new_users_required
 def setToUserAdminConfirmation(userData):
     try:
         req = request.json

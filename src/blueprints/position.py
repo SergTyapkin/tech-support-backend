@@ -27,7 +27,7 @@ def positionGet(userId):
 
 
 @app.route("", methods=["POST"])
-@login_required_admin
+@login_and_can_edit_positions_required
 def positionCreate(userData):
     try:
         req = request.json
@@ -40,7 +40,7 @@ def positionCreate(userData):
 
 
 @app.route("", methods=["PUT"])
-@login_required_admin
+@login_and_can_edit_positions_required
 def positionUpdate(userData):
     try:
         req = request.json
@@ -56,7 +56,7 @@ def positionUpdate(userData):
 
 
 @app.route("", methods=["DELETE"])
-@login_required_admin
+@login_and_can_edit_positions_required
 def positionDelete(userData):
     try:
         req = request.json

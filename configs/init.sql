@@ -8,11 +8,21 @@ CREATE TABLE IF NOT EXISTS users (
     secondName         TEXT DEFAULT NULL,
     thirdName          TEXT DEFAULT NULL,
     title              TEXT DEFAULT NULL,
-    isAdmin            BOOLEAN DEFAULT FALSE,
     joinedDate         TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     isConfirmedEmail   BOOLEAN DEFAULT FALSE,
     isConfirmedByAdmin BOOLEAN DEFAULT FALSE,
-    avatarImageId      TEXT
+    avatarImageId      TEXT,
+
+    canEditAchievements    BOOLEAN DEFAULT FALSE,
+    canAssignAchievements  BOOLEAN DEFAULT FALSE,
+    canConfirmNewUsers     BOOLEAN DEFAULT FALSE,
+    canEditEvents          BOOLEAN DEFAULT FALSE,
+    canEditUsersTitles     BOOLEAN DEFAULT FALSE,
+    canEditParticipations  BOOLEAN DEFAULT FALSE,
+    canEditDocs            BOOLEAN DEFAULT FALSE,
+    canEditPlaces          BOOLEAN DEFAULT FALSE,
+    canEditPositions       BOOLEAN DEFAULT FALSE,
+    canExecuteSQL          BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS sessions (

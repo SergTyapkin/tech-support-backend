@@ -8,7 +8,7 @@ app = Blueprint('participations', __name__)
 
 
 @app.route("/unvoted", methods=["GET"])
-@login_required_admin
+@login_and_can_edit_participations_required
 def getUnvotedParticipations(userData):
     resp = DB.execute(sql.selectParticipationsUnvoted, manyResults=True)
     list_times_to_str(resp)
@@ -44,14 +44,14 @@ def participateInEvent(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userId != userData['id']) and (not userData['isadmin']):
+    if (userId != userData['id']) and (not userData['caneditparticipations']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     eventData = DB.execute(sql.selectEventById, [eventId])
     if eventData is None:
         jsonResponse("Такого события не существует", HTTP_NOT_FOUND)
 
-    if (not eventData['isnext']) and (not userData['isadmin']):
+    if (not eventData['isnext']) and (not userData['caneditparticipations']):
         jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
     try:
@@ -71,14 +71,14 @@ def notParticipateInEvent(userData):
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
-    if (userId != userData['id']) and (not userData['isadmin']):
+    if (userId != userData['id']) and (not userData['caneditparticipations']):
         return jsonResponse("Недостаточно прав доступа", HTTP_NO_PERMISSIONS)
 
     eventData = DB.execute(sql.selectEventById, [eventId])
     if not eventData:
         return jsonResponse("Такого события не сущетвует", HTTP_NOT_FOUND)
 
-    if (not eventData['isnext']) and (not userData['isadmin']):
+    if (not eventData['isnext']) and (not userData['caneditparticipations']):
         return jsonResponse("Событие уже закончилось, а вы - не админ", HTTP_DATA_CONFLICT)
 
     DB.execute(sql.deleteParticipationByEventidUserid, [eventId, userId])
@@ -86,7 +86,7 @@ def notParticipateInEvent(userData):
 
 
 @app.route("/event", methods=["PUT"])
-@login_required_admin
+@login_and_can_edit_participations_required
 def updateParticipationData(userData):
     try:
         req = request.json

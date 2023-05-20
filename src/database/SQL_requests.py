@@ -1,7 +1,7 @@
 # -----------------------
 # -- Default user part --
 # -----------------------
-_userColumns = "users.id, users.firstName, users.secondName, users.thirdName, users.email, users.telegram, users.title, users.isAdmin, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId"
+_userColumns = "users.id, users.firstName, users.secondName, users.thirdName, users.email, users.telegram, users.title, users.joinedDate, users.isConfirmedEmail, users.isConfirmedByAdmin, users.avatarImageId, users.canEditAchievements, users.canAssignAchievements, users.canConfirmNewUsers, users.canEditEvents, users.canEditUsersTitles, users.canEditUsersData, users.canEditParticipations, users.canEditDocs, users.canEditPlaces, users.canEditPositions, users.canExecuteSQL"
 # ----- INSERTS -----
 insertUser = \
     "INSERT INTO users (password, avatarImageId, email, firstName, secondName, thirdName, telegram) " \
@@ -28,7 +28,7 @@ selectUserById = \
     "WHERE id = %s"
 
 selectAnotherUserById = \
-    f"SELECT id, firstName, secondName, thirdName, isAdmin, joinedDate, avatarImageId, telegram, title FROM users " \
+    f"SELECT id, firstName, secondName, thirdName, joinedDate, avatarImageId, telegram, title FROM users " \
     "WHERE id = %s"
 
 selectUserByEmail = \
