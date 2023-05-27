@@ -31,7 +31,7 @@ if __name__ == '__main__':
     msg['From'] = config["mail_sender_name"]
     msg['To'] = MAIL_RECIPIENT
     msg.attach(MIMEText(MAIL_HTML, 'html'))
-    with open(FILE_PATH, "r") as f:
+    with open(FILE_PATH, "rb") as f:
         part = MIMEApplication(
             f.read(),
             Name=FILE_NAME
