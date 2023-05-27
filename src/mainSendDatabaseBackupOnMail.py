@@ -23,7 +23,7 @@ BACKUPS_DIR = "/pg_backups"
 
 if __name__ == '__main__':
     WEEKDAY = datetime.today().strftime('%A')
-    FILE_NAME = f"backup_{WEEKDAY}.sql.gz"
+    FILE_NAME = f"backup_{WEEKDAY}.sql.backup"
     FILE_PATH = os.path.join(BACKUPS_DIR, FILE_NAME)
 
     msg = MIMEMultipart()
