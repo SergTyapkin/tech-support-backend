@@ -15,8 +15,7 @@ MAIL_RECIPIENT = config["mail_address"]
 MAIL_HTML = """<html>
   <head></head>
   <body>
-    <h1>Вот такое вот сообщение</h1>
-    <div>Приветики</div>
+    <h1>Ура, новый бэкап!</h1>
   </body>
 </html>"""
 BACKUPS_DIR = "/pg_backups"

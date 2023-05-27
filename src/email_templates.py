@@ -1,14 +1,13 @@
 def _default_template(avatarUrl, fullName, htmlContent):
     avatarDiv = '<br>'
     if avatarUrl:
-        avatarDiv = f'''<img src="http://creativetechteam.bmstu.ru/api{avatarUrl}" height="80px" width="80px" alt="avatar" title="avatar" style="margin: 20px auto;border-radius: 40px"/>
+        avatarDiv = f'''<img src="http://creativetechteam.bmstu.ru/image{avatarUrl}" height="80px" width="80px" alt="avatar" title="avatar" style="margin: 20px auto;border-radius: 40px"/>
             <br>
         '''
 
     fullNameDiv = ''
     if fullName:
-        fullNameDiv = f'''<span style="font-weight: bold;font-size: 22px;color: #f3f3f3;">{fullName},</span>
-            <br>
+        fullNameDiv = f'''<span style="font-weight: bold;font-size: 22px;color: #f3f3f3;margin: 20px 0">{fullName},</span>
             <br>
         '''
 
@@ -17,6 +16,8 @@ def _default_template(avatarUrl, fullName, htmlContent):
       <div style="margin-left: auto;margin-right: auto;width: 100%;max-width: 600px;padding:40px 0;font-family: Arial, sans-serif">
         <div style="margin: 40px 0;padding: 0 35px 25px;text-align: center;color: #d5d5d5;background: linear-gradient(60deg,#2f2f2f 0%, #2b3d39 100%) 50% 50% no-repeat;box-shadow: 3px 3px 10px #000;border-radius: 7px;line-height: 1.3;font-size: 16px;">
     
+          {avatarDiv}
+          
           {fullNameDiv}
         
           <div class="content">
@@ -25,7 +26,7 @@ def _default_template(avatarUrl, fullName, htmlContent):
                 
           <br>
           <div style="padding: 0 15px;color: #aaa;font-size: 11px;text-align: center;">
-            <span>Ты получаешь это письмо, потому что этот адрес почты указапри регистрации на SQuest.</span>
+            <span>Ты видишь это письмо, потому что этот твой адрес указан при регистрации на creativetechteam.bmstu.ru.</span>
             <br>
             <span>С этого электронного адреса приходят только важные письма для восстановления пароля, входа в аккаунт и.т.п.</span>
           </div>
