@@ -153,7 +153,7 @@ def userCreate():
     firstName = firstName.strip()
     secondName = secondName.strip()
     thirdName = thirdName.strip()
-    telegram = telegram.strip().lower()
+    telegram = telegram.strip(' @').lower()
 
     password = hash_sha256(password)
 
@@ -189,7 +189,7 @@ def userUpdate(userData):
         return jsonResponse("Изменять титул могут только админы", HTTP_NO_PERMISSIONS)
 
     if email: email = email.strip().lower()
-    if telegram: telegram = telegram.strip().lower()
+    if telegram: telegram = telegram.strip(' @').lower()
     if firstName: firstName = firstName.strip()
     if secondName: secondName = secondName.strip()
     if thirdName: thirdName = thirdName.strip()
