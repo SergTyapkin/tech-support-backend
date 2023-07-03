@@ -62,15 +62,24 @@ selectUserByEmailCodeType = \
     "type = %s AND " \
     "expires > NOW()"
 
+
 def selectUsersByFilters(filters):
     return \
         f"SELECT {_userColumns} FROM users " \
         "WHERE " + \
         (f"isconfirmedByAdmin = {filters['confirmedByAdmin']} AND " if 'confirmedByAdmin' in filters else "") + \
         (f"isconfirmedEmail = {filters['confirmedEmail']} AND " if 'confirmedEmail' in filters else "") + \
-        (f"LOWER(firstName  || ' ' || secondName) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
+        (
+            f"LOWER(firstName  || ' ' || secondName) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
         "1 = 1 " \
         "ORDER BY firstName, secondName"
+
+
+selectParticipationsExtract = \
+    "SELECT events.*, positions.name positionname, events.date FROM participations " \
+    "JOIN events ON participations.eventid = events.id " \
+    "JOIN positions ON participations.positionid = positions.id " \
+    "WHERE userid = %s"
 
 # ----- UPDATES -----
 updateUserById = \
@@ -160,6 +169,7 @@ insertDoc = \
     "INSERT INTO docs (title, text, placeId, positionid, authorId, lastRedactorId) " \
     "VALUES (%s, %s, %s, %s, %s, %s) " \
     "RETURNING *"
+
 
 # ----- SELECTS -----
 def selectEvents(filters):
@@ -374,7 +384,6 @@ deleteImageByIdAuthor = \
     "DELETE FROM images " \
     "WHERE id = %s AND author = %s"
 
-
 # --- ACHIEVEMENTS ---
 insertAchievement = \
     "INSERT INTO achievements (name, description, levels, imageId, authorId, special) " \
@@ -411,7 +420,6 @@ deleteAchievementById = \
     "DELETE FROM achievements " \
     "WHERE id = %s"
 
-
 insertUserAchievement = \
     "INSERT INTO usersachievements (userId, achievementId, level, authorId) " \
     "VALUES (%s, %s, %s, %s) " \
@@ -438,4 +446,3 @@ deleteUserAchievementByUserIdAchievementId = \
     "DELETE FROM usersachievements " \
     "WHERE userId = %s " \
     "AND achievementId = %s"
-

@@ -129,3 +129,11 @@ def updateSelfParticipationComment(userData):
 
     response = DB.execute(sql.updateParticipationCommentById, [comment, id])
     return jsonResponse(response)
+
+
+@app.route("/extract")
+@login_required_return_id
+def getExtractByAllParticipations(userId):
+    participationData = DB.execute(sql.selectParticipationsExtract, [userId], manyResults=True)
+    list_times_to_str(participationData)
+    return jsonResponse({"participations": participationData})
