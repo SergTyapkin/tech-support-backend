@@ -13,4 +13,12 @@ def detectGeoLocation():
         response = _reader.city(request.environ['IP_ADDRESS'])
     except geoip2.errors.AddressNotFoundError:
         return 'Unknown position'
-    return f"{response.city.name}, {response.subdivisions.most_specific.name}, {response.country.name}"
+    res = []
+    if response.city.name is not None:
+        res.append(response.city.name)
+    if response.subdivisions.most_specific.name is not None:
+        res.append(response.subdivisions.most_specific.name)
+    if response.country.name is not None:
+        res.append(response.country.name)
+
+    return ', '.join(res)
