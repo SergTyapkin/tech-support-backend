@@ -1,6 +1,8 @@
 # TechSupport backend v1.0
 Пример деплоя и подробная инструкция: https://github.com/SergTyapkin/tech-support-deploy
 
+Для определения местоположения входов нужно скачать базу данных IP-адресов: https://git.io/GeoLite2-City.mmdb, и положить в папку `configs` 
+
 ---
 ### Запуск для разработки:
 Нужна версия Python >= 3.10

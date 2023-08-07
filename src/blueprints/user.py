@@ -5,6 +5,7 @@ from flask import Blueprint
 
 from src.utils.access import *
 from src.constants import *
+from src.utils.detectGeoPositionUtils import detectGeoLocation
 from src.utils.utils import *
 
 from src import email_templates as emails
@@ -12,16 +13,17 @@ from src import email_templates as emails
 app = Blueprint('user', __name__)
 
 
-def new_session(resp):
-    tokenResp = DB.execute(sql.selectSessionByUserId, [resp['id']])
-    if tokenResp:
-        token = tokenResp['token']
-        expires = tokenResp['expires']
-    else:
-        token = str(uuid.uuid4())
-        hoursAlive = 24 * 7  # 7 days
-        session = DB.execute(sql.insertSession, [resp['id'], token, hoursAlive])
-        expires = session['expires']
+def new_session(resp, browser, osName, geolocation, ip):
+    # tokenResp = DB.execute(sql.selectSessionByUserId, [resp['id']])
+    # if tokenResp:
+    #     token = tokenResp['token']
+    #     expires = tokenResp['expires']
+    # else:
+
+    token = str(uuid.uuid4())
+    hoursAlive = 24 * 7  # 7 days
+    session = DB.execute(sql.insertSession, [resp['id'], token, hoursAlive, ip, browser, osName, geolocation])
+    expires = session['expires']
 
     DB.execute(sql.deleteExpiredSessions)
 
@@ -56,6 +58,8 @@ def userAuth():
         req = request.json
         email = req['email']
         password = req['password']
+        clientBrowser = req.get('clientBrowser') or 'Unknown browser'
+        clientOS = req.get('clientOS') or 'Unknown OS'
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
     email = email.strip().lower()
@@ -65,23 +69,50 @@ def userAuth():
     if not resp:
         return jsonResponse("Неверные email или пароль", HTTP_INVALID_AUTH_DATA)
 
-    return new_session(resp)
+    return new_session(resp, clientBrowser, clientOS, detectGeoLocation(), request.environ['IP_ADDRESS'])
 
 
 @app.route("/session", methods=["DELETE"])
-def userSessionDelete():
-    token = request.cookies.get('session_token')
-    if not token:
-        return jsonResponse("Вы не вошли в аккаунт", HTTP_NO_PERMISSIONS)
-
+@login_required
+def userSessionDelete(userData):
     try:
-        DB.execute(sql.deleteSessionByToken, [token])
+        DB.execute(sql.deleteSessionByToken, [userData['session_token']])
     except:
         return jsonResponse("Сессия не удалена", HTTP_INTERNAL_ERROR)
 
     res = jsonResponse("Вы вышли из аккаунта")
     res.set_cookie("session_token", "", max_age=-1, httponly=True, samesite="none", secure=True)
     return res
+
+
+@app.route("/sessions/another", methods=["DELETE"])
+@login_required
+def userAnotherSessionsDelete(userData):
+    try:
+        DB.execute(sql.deleteAllUserSessionsWithout, [userData['id'], userData['session_token']])
+    except:
+        return jsonResponse("Сессия не удалена", HTTP_INTERNAL_ERROR)
+
+    res = jsonResponse("Вы вышли из аккаунта")
+    return res
+
+
+@app.route("/sessions/all")
+@login_required
+def getAllUserSessions(userData):
+    try:
+        sessions = DB.execute(sql.selectAllUserSessions, [userData['id']], manyResults=True)
+    except:
+        return jsonResponse("Не удалось получить список сессий", HTTP_INTERNAL_ERROR)
+
+    for session in sessions:
+        times_to_str(session)
+        if session['token'] == userData['session_token']:
+            session['isCurrent'] = True
+        else:
+            session['isCurrent'] = False
+        del session['token']
+    return jsonResponse({'sessions': sessions})
 
 
 @app.route("")
@@ -147,6 +178,8 @@ def userCreate():
         password = req['password']
         email = req['email']
         telegram = req.get('telegram')
+        clientBrowser = req.get('clientBrowser') or 'Unknown browser'
+        clientOS = req.get('clientOS') or 'Unknown OS'
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
     email = email.strip().lower()
@@ -162,7 +195,7 @@ def userCreate():
     except:
         return jsonResponse("Имя пользователя или email заняты", HTTP_DATA_CONFLICT)
 
-    return new_session(resp)
+    return new_session(resp, clientBrowser, clientOS, detectGeoLocation(), request.environ['IP_ADDRESS'])
 
 
 @app.route("", methods=["PUT"])
@@ -293,6 +326,8 @@ def userAuthByEmailCode():
         req = request.json
         email = req['email']
         code = req.get('code')
+        clientBrowser = req.get('clientBrowser') or 'Unknown browser'
+        clientOS = req.get('clientOS') or 'Unknown OS'
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
     email = email.strip().lower()
@@ -318,7 +353,7 @@ def userAuthByEmailCode():
     if not resp:
         return jsonResponse("Неверные email или одноразовый код", HTTP_INVALID_AUTH_DATA)
 
-    return new_session(resp)
+    return new_session(resp, clientBrowser, clientOS, detectGeoLocation(), request.environ['IP_ADDRESS'])
 
 
 @app.route("/email/confirm", methods=["POST"])

@@ -9,8 +9,8 @@ insertUser = \
     f"RETURNING {_userColumns}"
 
 insertSession = \
-    "INSERT INTO sessions (userId, token, expires) " \
-    "VALUES (%s, %s, NOW() + interval '1 hour' * %s) " \
+    "INSERT INTO sessions (userId, token, expires, ip, browser, os, geolocation) " \
+    "VALUES (%s, %s, NOW() + interval '1 hour' * %s, %s, %s, %s, %s) " \
     "RETURNING *"
 
 insertSecretCode = \
@@ -36,15 +36,19 @@ selectUserByEmail = \
     "WHERE email = %s"
 
 selectUserIdBySessionToken = \
-    "SELECT userId FROM sessions " \
+    "SELECT userId, ip FROM sessions " \
     "WHERE token = %s"
 
 selectSessionByUserId = \
     "SELECT token, expires FROM sessions " \
     "WHERE userId = %s"
 
+selectAllUserSessions = \
+    "SELECT token, expires, ip, browser, os, geolocation FROM sessions " \
+    "WHERE userId = %s"
+
 selectUserDataBySessionToken = \
-    f"SELECT {_userColumns} FROM sessions " \
+    f"SELECT {_userColumns}, ip FROM sessions " \
     "JOIN users ON sessions.userId = users.id " \
     "WHERE token = %s"
 
@@ -130,6 +134,11 @@ deleteUserById = \
 deleteSessionByToken = \
     "DELETE FROM sessions " \
     "WHERE token = %s"
+
+deleteAllUserSessionsWithout = \
+    "DELETE FROM sessions " \
+    "WHERE userId = %s AND " \
+    "token != %s"
 
 deleteExpiredSecretCodes = \
     "DELETE FROM secretCodes " \

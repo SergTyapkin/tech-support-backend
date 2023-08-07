@@ -4,13 +4,13 @@ from werkzeug.datastructures import Headers
 
 class Middleware:
     def __init__(self, app, **kwargs):
-        self.prefix = kwargs.get('url_prefix') or ""
+        self.prefix = kwargs.get('url_prefix', '')
         self.app = app
 
-        self.cors_origins = kwargs.get('cors_origins') or []
+        self.cors_origins = kwargs.get('cors_origins', [])
         # self.cors_origins = ", ".join(self.cors_origins)
 
-        self.cors_methods = kwargs.get('cors_methods') or ["GET", "POST", "PUT", "DELETE"]
+        self.cors_methods = kwargs.get('cors_methods', ["GET", "POST", "PUT", "DELETE"])
         self.cors_methods = ", ".join(self.cors_methods)
 
     def __call__(self, environ, start_response):
@@ -35,6 +35,14 @@ class Middleware:
         if environ.get("REQUEST_METHOD") == "OPTIONS":
             add_cors_headers("200 Ok", [("Content-Type", "text/plain")])
             return [b'200 Ok']
+
+        if environ.get('HTTP_X_FORWARDED_FOR') is None:
+            ip_addr = environ.get('REMOTE_ADDR')
+        else:
+            ip_addr = environ.get('HTTP_X_FORWARDED_FOR')  # if behind a proxy
+        if ip_addr is None:
+            ip_addr = 'Unknown IP-address'
+        environ['IP_ADDRESS'] = ip_addr
 
         # End
         return self.app(environ, add_cors_headers)

@@ -13,23 +13,33 @@ def hash_sha256(auth_string: str) -> str:
     hash = hashlib.sha256(auth_string.encode()).hexdigest()
     return hash
 
-def get_logined_userid():
+
+def compare_user_session_ip(dbSession):
+    print(dbSession['ip'], request.environ['IP_ADDRESS'])
+    if dbSession['ip'] == request.environ['IP_ADDRESS']:
+        return None  # ok
+    return jsonResponse('IP адрес не совпаадет с IP адресом, с которого была открыта сессия', HTTP_INVALID_AUTH_DATA)
+
+
+def get_logined_userid() -> dict | None:
     token = request.cookies.get('session_token')
     if not token:
-        return ''
-    session = DB.execute(sql.selectUserIdBySessionToken, [token])
-    if len(session) == 0:
-        return ''
-    return session['userid']
+        return None
+    result = DB.execute(sql.selectUserIdBySessionToken, [token])
+    if len(result) == 0:
+        return None
+    result['session_token'] = token
+    return result
 
 
-def get_logined_user():
+def get_logined_user() -> dict | None:
     token = request.cookies.get('session_token')
     if not token:
         return None
     result = DB.execute(sql.selectUserDataBySessionToken, [token])
     if len(result) == 0:
         return None
+    result['session_token'] = token
     return result
 
 
@@ -39,6 +49,9 @@ def login_required(f):
         userData = get_logined_user()
         if not userData:
             return jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
+        ipCompareRes = compare_user_session_ip(userData)
+        if ipCompareRes:
+            return ipCompareRes
         if not userData['isconfirmedbyadmin']:
             return jsonResponse("Не подтвержден", HTTP_NO_PERMISSIONS)
         return f(*args, userData, **kwargs)
@@ -50,6 +63,9 @@ def __login_and_property_required(propertyName, denyMessage):
     userData = get_logined_user()
     if not userData:
         return userData, jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
+    ipCompareRes = compare_user_session_ip(userData)
+    if ipCompareRes:
+        return ipCompareRes
     if not userData['isconfirmedbyadmin']:
         return jsonResponse("Не подтвержден", HTTP_NO_PERMISSIONS)
     if not userData[propertyName]:
@@ -130,6 +146,9 @@ def login_required_return_id(f):
         userData = get_logined_user()
         if not userData:
             return jsonResponse("Не авторизован", HTTP_INVALID_AUTH_DATA)
+        ipCompareRes = compare_user_session_ip(userData)
+        if ipCompareRes:
+            return ipCompareRes
         if not userData['isconfirmedbyadmin']:
             return jsonResponse("Не подтвержден", HTTP_NO_PERMISSIONS)
         return f(*args, userData['id'], **kwargs)
@@ -141,7 +160,7 @@ def login_or_none(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         userData = get_logined_user()
-        if not userData:
+        if not userData or compare_user_session_ip(userData):
             userData = None
         return f(*args, userData, **kwargs)
 
@@ -151,9 +170,11 @@ def login_or_none(f):
 def login_or_none_return_id(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        userId = get_logined_userid()
-        if not userId:
+        session = get_logined_userid()
+        if session is None or compare_user_session_ip(session):
             userId = None
+        else:
+            userId = session['userid']
         return f(*args, userId, **kwargs)
 
     return wrapper

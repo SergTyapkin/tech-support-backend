@@ -1,8 +1,9 @@
 import datetime
 import json
 import os
+from geoip2 import database
 
-from flask import jsonify, make_response, current_app
+from flask import jsonify, make_response, current_app, request
 from flask_mail import Mail, Message
 
 from src.constants import HTTP_OK
