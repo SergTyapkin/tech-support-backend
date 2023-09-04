@@ -8,6 +8,7 @@ from src.blueprints.event import app as event_app
 from src.blueprints.ratings import app as ratings_app
 from src.blueprints.participation import app as participation_app
 from src.blueprints.place import app as place_app
+from src.blueprints.period import app as period_app
 from src.blueprints.position import app as position_app
 from src.blueprints.docs import app as docs_app
 from src.blueprints.image import app as image_app
@@ -26,6 +27,7 @@ app.register_blueprint(event_app,  url_prefix='/event')
 app.register_blueprint(ratings_app, url_prefix='/ratings')
 app.register_blueprint(participation_app,   url_prefix='/participation')
 app.register_blueprint(place_app,   url_prefix='/place')
+app.register_blueprint(period_app,   url_prefix='/period')
 app.register_blueprint(position_app,   url_prefix='/position')
 app.register_blueprint(docs_app,   url_prefix='/docs')
 app.register_blueprint(image_app,   url_prefix='/image')
