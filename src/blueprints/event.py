@@ -14,7 +14,9 @@ def eventsGet(userId):
         req = request.args
         id = req.get('id')
 
-        date = req.get('date')
+        dateStart = req.get('dateStart')
+        dateEnd = req.get('dateEnd')
+        search = req.get('search')
         placeId = req.get('placeId')
         participantId = req.get('participantId')
         type = req.get('type')

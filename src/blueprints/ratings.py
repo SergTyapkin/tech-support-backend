@@ -8,7 +8,14 @@ app = Blueprint('ratings', __name__)
 
 @app.route("")
 def getRatings():
-    resp = DB.execute(sql.selectRatings, manyResults=True)
+    try:
+        req = request.args
+        dateStart = req.get('dateStart')
+        dateEnd = req.get('dateEnd')
+    except:
+        return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
+
+    resp = DB.execute(sql.selectRatings(dateStart, dateEnd), manyResults=True)
     moreZeroRatings = []
     lowZeroRatings = []
     noneRatings = []

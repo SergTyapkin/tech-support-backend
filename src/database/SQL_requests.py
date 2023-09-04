@@ -182,9 +182,11 @@ insertDoc = \
 
 # ----- SELECTS -----
 def selectEvents(filters):
-    type = ''
-    if 'type' in filters:
-        type = filters['type']
+    type = filters.get('type', '')
+    dateStart = filters.get('dateStart')
+    dateEnd = filters.get('dateEnd')
+    placeId = filters.get('placeId')
+    search = filters.get('search')
 
     typeStr = "1 = 1 "
     if type == 'next':
@@ -206,9 +208,10 @@ def selectEvents(filters):
         "LEFT JOIN users ON events.authorId = users.id " + \
         participationJoin + \
         "WHERE " + \
-        (f"date = {filters['date']} AND " if 'date' in filters else "") + \
-        (f"placeId = {filters['placeId']} AND " if 'placeId' in filters else "") + \
-        (f"LOWER(events.name) LIKE '%%{filters['search'].lower()}%%' AND " if 'search' in filters else "") + \
+        (f"date >= '{dateStart}' AND " if dateStart is not None else "") + \
+        (f"date < '{dateEnd}' AND " if dateEnd is not None else "") + \
+        (f"placeId = {placeId} AND " if placeId is not None else "") + \
+        (f"LOWER(events.name) LIKE '%%{search.lower()}%%' AND " if search is not None else "") + \
         participationWhere + typeStr + \
         "ORDER BY events.date, events.timestart"
 
@@ -293,13 +296,24 @@ selectUserVotedParticipationsPlaces = \
     "AND score is not NULL " \
     "GROUP BY events.placeId"
 
-selectRatings = \
-    "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.thirdName) as name, users.title, users.avatarimageid " \
-    "FROM users " \
-    "LEFT JOIN participations ON participations.userId = users.id " \
-    "WHERE isConfirmedEmail = True AND isConfirmedByAdmin = True " \
-    "GROUP BY users.id " \
-    "ORDER BY rating DESC"
+def selectRatings(dateStart, dateEnd):
+    return \
+        "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.thirdName) as name, users.title, users.avatarimageid " \
+        "FROM users " \
+        "LEFT JOIN participations ON participations.userId = users.id " + \
+            (f"LEFT JOIN events ON participations.eventid = events.id " if dateStart is not None or dateEnd is not None else "") + \
+        "WHERE isConfirmedEmail = True AND isConfirmedByAdmin = True " + \
+            (f"AND events.date >= '{dateStart}' " if dateStart is not None else "") + \
+            (f"AND events.date < '{dateEnd}' " if dateEnd is not None else "") + \
+        "GROUP BY users.id " \
+        "ORDER BY rating DESC"
+
+selectAllPeriods = \
+    "SELECT * FROM periods " \
+    "ORDER BY dateStart"
+selectPeriodById = \
+    "SELECT * FROM periods " \
+    "WHERE id = %s"
 
 # ----- UPDATES -----
 updateEventById = \

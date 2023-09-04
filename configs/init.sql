@@ -112,6 +112,13 @@ CREATE TABLE IF NOT EXISTS docs (
     authorId       INT REFERENCES users(id) ON DELETE SET NULL,
     lastRedactorId INT REFERENCES users(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS periods (
+    id            SERIAL PRIMARY KEY,
+    name          TEXT NOT NULL,
+    dateStart     DATE NOT NULL,
+    dateEnd       DATE NOT NULL
+);
 ----------
 -- DO $$
 -- BEGIN
