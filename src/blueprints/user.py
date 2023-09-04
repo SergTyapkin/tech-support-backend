@@ -125,7 +125,7 @@ def userGet(userData):
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
     def addRatingsData(userData):
-        res = DB.execute(sql.selectRatings, [], manyResults=True)
+        res = DB.execute(sql.selectRatings(), [], manyResults=True)
         positionDecrease = 0
         for idx, rating in enumerate(res):
             if rating['rating'] is None:

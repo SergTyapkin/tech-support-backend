@@ -296,7 +296,7 @@ selectUserVotedParticipationsPlaces = \
     "AND score is not NULL " \
     "GROUP BY events.placeId"
 
-def selectRatings(dateStart, dateEnd):
+def selectRatings(dateStart=None, dateEnd=None):
     return \
         "SELECT sum(participations.score) as rating, users.id, (users.firstName  || ' ' || users.thirdName) as name, users.title, users.avatarimageid " \
         "FROM users " \
