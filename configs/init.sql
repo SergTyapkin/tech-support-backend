@@ -29,7 +29,11 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS sessions (
     userId   SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token    TEXT NOT NULL UNIQUE,
-    expires  TIMESTAMP WITH TIME ZONE
+    expires  TIMESTAMP WITH TIME ZONE,
+    ip          TEXT,
+    browser     TEXT,
+    os          TEXT,
+    geolocation TEXT
 );
 
 CREATE TABLE IF NOT EXISTS secretCodes (
