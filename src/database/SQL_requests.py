@@ -84,7 +84,8 @@ selectParticipationsExtract = \
     "JOIN events ON participations.eventid = events.id " \
     "JOIN positions ON participations.positionid = positions.id " \
     "WHERE userid = %s "\
-    "AND events.date BETWEEN (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd) AND (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd)"
+    "AND events.date BETWEEN 2023-09-01 AND 2023-12-31"
+    # "AND events.date BETWEEN (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd) AND (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd)"
 
 # ----- UPDATES -----
 updateUserById = \
