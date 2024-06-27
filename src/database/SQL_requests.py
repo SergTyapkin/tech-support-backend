@@ -79,13 +79,15 @@ def selectUsersByFilters(filters):
         "ORDER BY firstName, secondName"
 
 
-selectParticipationsExtract = \
+selectParticipationsExtractByUserIdPeriod = \
     "SELECT events.*, positions.name positionname, events.date FROM participations " \
     "JOIN events ON participations.eventid = events.id " \
     "JOIN positions ON participations.positionid = positions.id " \
     "WHERE userid = %s "\
-    "AND events.date BETWEEN '2023-09-01'::DATE AND '2023-12-31'::DATE"
-    # "AND events.date BETWEEN (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd) AND (SELECT dateStart FROM periods WHERE NOW() BETWEEN dateStart AND dateEnd)"
+    "AND events.date BETWEEN %s AND %s"
+
+selectCurrentPeriod = \
+ "SELECT * FROM periods WHERE NOW() BETWEEN dateStart AND (dateEnd + interval '1 month')"
 
 # ----- UPDATES -----
 updateUserById = \

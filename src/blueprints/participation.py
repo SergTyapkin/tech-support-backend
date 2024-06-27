@@ -134,6 +134,18 @@ def updateSelfParticipationComment(userData):
 @app.route("/extract")
 @login_required_return_id
 def getExtractByAllParticipations(userId):
-    participationData = DB.execute(sql.selectParticipationsExtract, [userId], manyResults=True)
+    period = DB.execute(sql.selectCurrentPeriod)
+    if not period:
+        return jsonResponse("Текущий период не найден", HTTP_NOT_FOUND)
+    print(period)
+    participationData = DB.execute(sql.selectParticipationsExtractByUserIdPeriod, [userId, period['datestart'], period['dateend']], manyResults=True)
+    print(participationData)
     list_times_to_str(participationData)
-    return jsonResponse({"participations": participationData})
+    times_to_str(period)
+    return jsonResponse({
+        "participations": participationData,
+        "dateStart": period['datestart'],
+        "dateEnd": period['dateend'],
+        "periodName": period['name'],
+        "periodId": period['id'],
+    })
