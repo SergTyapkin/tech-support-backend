@@ -137,9 +137,7 @@ def getExtractByAllParticipations(userId):
     period = DB.execute(sql.selectCurrentPeriod)
     if not period:
         return jsonResponse("Текущий период не найден", HTTP_NOT_FOUND)
-    print(period)
     participationData = DB.execute(sql.selectParticipationsExtractByUserIdPeriod, [userId, period['datestart'], period['dateend']], manyResults=True)
-    print(participationData)
     list_times_to_str(participationData)
     times_to_str(period)
     return jsonResponse({
