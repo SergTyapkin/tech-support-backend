@@ -31,6 +31,10 @@ selectAnotherUserById = \
     f"SELECT id, firstName, secondName, thirdName, joinedDate, avatarImageId, telegram, title FROM users " \
     "WHERE id = %s"
 
+selectAnotherUserByIdWithEmail = \
+    f"SELECT id, firstName, secondName, thirdName, joinedDate, avatarImageId, telegram, title, email FROM users " \
+    "WHERE id = %s"
+
 selectUserByEmail = \
     f"SELECT {_userColumns} FROM users " \
     "WHERE email = %s"

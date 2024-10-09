@@ -160,12 +160,15 @@ def userGet(userData):
         return jsonResponse(userData)
 
     # get another user data
-    userData = DB.execute(sql.selectAnotherUserById, [userId])
-    if not userData:
+    if userData['caneditusersdata']:
+        anotherUserData = DB.execute(sql.selectAnotherUserByIdWithEmail, [userId])
+    else:
+        anotherUserData = DB.execute(sql.selectAnotherUserById, [userId])
+    if not anotherUserData:
         return jsonResponse("Пользователь не найден", HTTP_NOT_FOUND)
-    addEvents(userData)
-    addRatingsData(userData)
-    return jsonResponse(userData)
+    addEvents(anotherUserData)
+    addRatingsData(anotherUserData)
+    return jsonResponse(anotherUserData)
 
 
 @app.route("", methods=["POST"])
