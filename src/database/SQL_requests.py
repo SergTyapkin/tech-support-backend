@@ -32,7 +32,7 @@ selectAnotherUserById = \
     "WHERE id = %s"
 
 selectAnotherUserByIdWithEmail = \
-    f"SELECT id, firstName, secondName, thirdName, joinedDate, avatarImageId, telegram, title, email FROM users " \
+    f"SELECT id, firstName, secondName, thirdName, joinedDate, avatarImageId, telegram, title, email, isConfirmedEmail FROM users " \
     "WHERE id = %s"
 
 selectUserByEmail = \
