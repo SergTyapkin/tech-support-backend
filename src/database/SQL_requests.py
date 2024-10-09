@@ -163,8 +163,8 @@ deleteSecretCodeByUseridCode = \
 
 # ----- INSERTS -----
 insertEvent = \
-    "INSERT INTO events (name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, authorId) " \
-    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) " \
+    "INSERT INTO events (name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, authorId, isAcademy) " \
+    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) " \
     "RETURNING *"
 
 insertParticipation = \
@@ -195,12 +195,19 @@ def selectEvents(filters):
     dateEnd = filters.get('dateEnd')
     placeId = filters.get('placeId')
     search = filters.get('search')
+    typeAcademy = filters.get('typeAcademy')
 
     typeStr = "1 = 1 "
     if type == 'next':
         typeStr = "(date + timeend) > NOW() "
     elif type == 'past':
         typeStr = "(date + timeend) <= NOW() "
+
+    typeAcademyWhere = ""
+    if typeAcademy == 'academy':
+        typeAcademyWhere = "isAcademy = TRUE AND "
+    elif typeAcademy == 'events':
+        typeAcademyWhere = "isAcademy = FALSE AND "
 
     participationSelect = ""
     participationJoin = ""
@@ -216,6 +223,7 @@ def selectEvents(filters):
         "LEFT JOIN users ON events.authorId = users.id " + \
         participationJoin + \
         "WHERE " + \
+        typeAcademyWhere + \
         (f"date >= '{dateStart}' AND " if dateStart is not None else "") + \
         (f"date < '{dateEnd}' AND " if dateEnd is not None else "") + \
         (f"placeId = {placeId} AND " if placeId is not None else "") + \
@@ -334,7 +342,8 @@ updateEventById = \
     "timeEnd = %s, " \
     "eventTimeStart = %s, " \
     "eventTimeEnd = %s, " \
-    "peopleNeeds = %s " \
+    "peopleNeeds = %s, " \
+    "isAcademy = %s " \
     "WHERE id = %s " \
     "RETURNING *"
 

@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS events (
     eventTimeStart TIME DEFAULT NULL,
     eventTimeEnd   TIME DEFAULT NULL,
     peopleNeeds    INT DEFAULT NULL,
-    authorId       INT REFERENCES users(id) ON DELETE SET NULL
+    authorId       INT REFERENCES users(id) ON DELETE SET NULL,
+    isAcademy      BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS participations (

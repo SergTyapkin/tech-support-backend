@@ -56,6 +56,7 @@ def eventCreate(userData):
         eventTimeStart = req.get('eventTimeStart')
         eventTimeEnd = req.get('eventTimeEnd')
         peopleNeeds = req.get('peopleNeeds')
+        isAcademy = req.get('isAcademy')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -64,7 +65,7 @@ def eventCreate(userData):
     if eventTimeStart == '':
         eventTimeStart = None
 
-    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, userData['id']])
+    event = DB.execute(sql.insertEvent, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, userData['id'], isAcademy])
     times_to_str(event)
     return jsonResponse(event)
 
@@ -84,6 +85,7 @@ def eventUpdate(userData):
         eventTimeStart = req.get('eventTimeStart')
         eventTimeEnd = req.get('eventTimeEnd')
         peopleNeeds = req.get('peopleNeeds')
+        isAcademy = req.get('isAcademy')
     except:
         return jsonResponse("Не удалось сериализовать json", HTTP_INVALID_DATA)
 
@@ -101,13 +103,14 @@ def eventUpdate(userData):
     if eventTimeStart is None: eventTimeStart = eventData['eventtimestart']
     if eventTimeEnd is None: eventTimeEnd = eventData['eventtimeend']
     if peopleNeeds is None: peopleNeeds = eventData['peopleneeds']
+    if isAcademy is None: isAcademy = eventData['isacademy']
 
     if eventTimeEnd == '':
         eventTimeEnd = None
     if eventTimeStart == '':
         eventTimeStart = None
 
-    event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, id])
+    event = DB.execute(sql.updateEventById, [name, description, placeId, date, timeStart, timeEnd, eventTimeStart, eventTimeEnd, peopleNeeds, isAcademy, id])
     times_to_str(event)
     return jsonResponse(event)
 
