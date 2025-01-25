@@ -87,7 +87,8 @@ selectParticipationsExtractByUserIdPeriod = \
     "SELECT events.*, positions.name positionname, events.date FROM participations " \
     "JOIN events ON participations.eventid = events.id " \
     "JOIN positions ON participations.positionid = positions.id " \
-    "WHERE userid = %s "\
+    "WHERE userid = %s " \
+    "AND events.isacademy = FALSE " \
     "AND events.date BETWEEN %s AND %s"
 
 selectCurrentPeriod = \
