@@ -10,7 +10,7 @@ insertUser = \
 
 insertSession = \
     "INSERT INTO sessions (userId, token, expires, ip, browser, os, geolocation) " \
-    "VALUES (%s, %s, NOW() + interval '1 hour' * %s, %s, %s, %s, %s) " \
+    "VALUES (%s, %s, NOW() + interval '1 week' * %s, %s, %s, %s, %s) " \
     "RETURNING *"
 
 insertSecretCode = \
